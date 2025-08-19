@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 216 12% 17%;
+  --hostvue-primary: #D87441;
+  --hostvue-secondary: #C86635;
+  --hostvue-accent: #E89A6B;
+  --hostvue-tertiary: #F4A876;
+  --hostvue-dark: #2C2C2C;
+  --hostvue-gray: #6B7280;
+  --hostvue-light: #F7F7F7;
+  --hostvue-cream: #FAF8F5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 217 33% 7%;
+    --foreground: 0 0% 93%;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hostvue Color Utilities - Fallback classes */
+.bg-hostvue-primary { background-color: #D87441 !important; }
+.bg-hostvue-secondary { background-color: #C86635 !important; }
+.bg-hostvue-accent { background-color: #E89A6B !important; }
+.bg-hostvue-cream { background-color: #FAF8F5 !important; }
+.bg-hostvue-light { background-color: #F7F7F7 !important; }
+
+.text-hostvue-primary { color: #D87441 !important; }
+.text-hostvue-secondary { color: #C86635 !important; }
+.text-hostvue-dark { color: #2C2C2C !important; }
+.text-hostvue-gray { color: #6B7280 !important; }
+
+.border-hostvue-primary { border-color: #D87441 !important; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--hostvue-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--hostvue-secondary);
+}
