@@ -3,6 +3,8 @@ export interface TourismService {
   title: string;
   description: string;
   shortDescription: string;
+  fullDescription?: string; // Added for dataService compatibility
+  featured?: boolean; // Added for dataService compatibility
   price: number;
   originalPrice?: number;
   currency: string;
@@ -12,6 +14,10 @@ export interface TourismService {
   category: ServiceCategory;
   city: string;
   country: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  }; // Added for dataService compatibility
   imageUrl: string;
   imageGallery: string[];
   features: string[];
@@ -24,6 +30,8 @@ export interface TourismService {
     min: number;
     max: number;
   };
+  maxGuests?: number; // Added for dataService compatibility
+  minGuests?: number; // Added for dataService compatibility
   languages: string[];
   cancellationPolicy: string;
   tags: string[];
@@ -36,16 +44,20 @@ export interface ServiceCategory {
   description: string;
   icon: string;
   color: string;
+  serviceCount?: number; // Added for dataService compatibility
 }
 
 export interface City {
   id: string;
   name: string;
   country: string;
+  region?: string; // Added for dataService compatibility
   description: string;
   imageUrl: string;
   serviceCount: number;
   popularServices: string[];
+  latitude?: number; // Added for dataService compatibility
+  longitude?: number; // Added for dataService compatibility
 }
 
 export interface Review {

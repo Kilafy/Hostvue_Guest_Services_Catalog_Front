@@ -5,9 +5,10 @@ import { Filter, Grid, List } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
-import { tourismServices, categories, cities } from '@/data/mockData';
+import { useServicesPageData } from '@/hooks/useData';
 
 export default function ServicesPage() {
+  const { data: servicesPageData, loading, error } = useServicesPageData();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -17,6 +18,34 @@ export default function ServicesPage() {
     rating: 0,
     sortBy: 'popularity'
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-hostvue-light" style={{ backgroundColor: '#F7F7F7' }}>
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-hostvue-gray">Loading...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-hostvue-light" style={{ backgroundColor: '#F7F7F7' }}>
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-red-600">Error: {error}</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const tourismServices = servicesPageData?.services || [];
+  const categories = servicesPageData?.categories || [];
+  const cities = servicesPageData?.cities || [];
 
   const filteredServices = tourismServices.filter(service => {
     if (filters.category && service.category.id !== filters.category) return false;

@@ -1,22 +1,50 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Search, MapPin, ArrowRight, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServiceCard from "@/components/ServiceCard";
-import {
-  featuredServices,
-  popularDestinations,
-  categories,
-} from "@/data/mockData";
+import { useHomepageData } from "@/hooks/useData";
 
 export default function HomePage() {
+  const { data: homepageData, loading, error } = useHomepageData();
+  
   const heroFeatures = [
     { icon: CheckCircle, text: "24/7 Customer Support" },
     { icon: CheckCircle, text: "Best Price Guarantee" },
     { icon: CheckCircle, text: "Instant Confirmation" },
     { icon: CheckCircle, text: "Free Cancellation" },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-hostvue-gray">Loading...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-red-600">Error: {error}</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const featuredServices = homepageData?.featuredServices || [];
+  const categories = homepageData?.categories || [];
+  const popularDestinations = homepageData?.popularDestinations || [];
 
   return (
     <div className="min-h-screen bg-white">
