@@ -211,7 +211,7 @@ export default function HomePage() {
             {categories.map((category) => (
               <Link
                 key={category.id}
-                href={`/categories/${category.slug}`}
+                href={`/category?id=${category.id}`}
                 className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-hostvue-primary transition-all duration-200 hover:shadow-card"
               >
                 <div
@@ -249,7 +249,7 @@ export default function HomePage() {
             {popularDestinations.map((destination) => (
               <Link
                 key={destination.id}
-                href={`/destinations/${destination.id}`}
+                href={`/location?id=${destination.id}`}
                 className="group relative h-64 rounded-2xl overflow-hidden shadow-card hover:shadow-lg transition-all duration-300"
               >
                 <Image

@@ -1,7 +1,8 @@
+'use client';
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Settings, BarChart3, MapPin, Tag, Briefcase } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Plus, Settings, BarChart3, MapPin, Tag, Briefcase, List } from 'lucide-react';
 import ServiceForm from '@/components/admin/ServiceForm';
 import LocationForm from '@/components/admin/LocationForm';
 import CategoryForm from '@/components/admin/CategoryForm';
@@ -14,21 +15,26 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Settings className="h-8 w-8 text-blue-600 mr-3" />
+              <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4">
+                <Settings className="h-5 w-5 text-white" />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                <p className="text-sm text-gray-500">Manage your tourism services and content</p>
+                <p className="text-sm text-gray-600">Manage your tourism services and content</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Welcome, Admin</span>
-              <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm text-gray-500">Welcome back</p>
+                <p className="text-sm font-medium text-gray-900">Administrator</p>
+              </div>
+              <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium">A</span>
               </div>
             </div>
@@ -39,156 +45,132 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-4 mb-8 bg-white border border-gray-200 p-1 rounded-lg">
+            <TabsTrigger 
+              value="dashboard" 
+              className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+            >
               <BarChart3 className="h-4 w-4" />
-              Dashboard
+              <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="services" 
+              className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+            >
               <Briefcase className="h-4 w-4" />
-              Services
+              <span className="hidden sm:inline">Services</span>
             </TabsTrigger>
-            <TabsTrigger value="locations" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="locations" 
+              className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+            >
               <MapPin className="h-4 w-4" />
-              Locations
+              <span className="hidden sm:inline">Locations</span>
             </TabsTrigger>
-            <TabsTrigger value="categories" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="categories" 
+              className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+            >
               <Tag className="h-4 w-4" />
-              Categories
+              <span className="hidden sm:inline">Categories</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Overview */}
-          <TabsContent value="dashboard" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
-            </div>
+          <TabsContent value="dashboard" className="mt-0">
             <DashboardStats />
           </TabsContent>
 
           {/* Services Management */}
-          <TabsContent value="services" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold text-gray-900">Services Management</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Create Service Form */}
-              <div className="lg:col-span-1">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Plus className="h-5 w-5" />
-                      Create New Service
-                    </CardTitle>
-                    <CardDescription>
-                      Add a new tourism service to your catalog
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ServiceForm />
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Services List */}
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Existing Services</CardTitle>
-                    <CardDescription>
-                      Manage and edit your current services
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ServicesList />
-                  </CardContent>
-                </Card>
-              </div>
+          <TabsContent value="services" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                    <Plus className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Add New Service</h2>
+                    <p className="text-sm text-gray-600">Create a new tourism service offering</p>
+                  </div>
+                </div>
+                <ServiceForm />
+              </Card>
+              
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
+                    <List className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Existing Services</h2>
+                    <p className="text-sm text-gray-600">Manage your current service offerings</p>
+                  </div>
+                </div>
+                <ServicesList />
+              </Card>
             </div>
           </TabsContent>
 
           {/* Locations Management */}
-          <TabsContent value="locations" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold text-gray-900">Locations Management</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Create Location Form */}
-              <div className="lg:col-span-1">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Plus className="h-5 w-5" />
-                      Add New Location
-                    </CardTitle>
-                    <CardDescription>
-                      Add a new destination to your platform
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <LocationForm />
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Locations List */}
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Existing Locations</CardTitle>
-                    <CardDescription>
-                      Manage your destination locations
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <LocationsList />
-                  </CardContent>
-                </Card>
-              </div>
+          <TabsContent value="locations" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                    <MapPin className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Add New Location</h2>
+                    <p className="text-sm text-gray-600">Register a new destination or venue</p>
+                  </div>
+                </div>
+                <LocationForm />
+              </Card>
+              
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
+                    <List className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Existing Locations</h2>
+                    <p className="text-sm text-gray-600">Manage your current destinations</p>
+                  </div>
+                </div>
+                <LocationsList />
+              </Card>
             </div>
           </TabsContent>
 
           {/* Categories Management */}
-          <TabsContent value="categories" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold text-gray-900">Categories Management</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Create Category Form */}
-              <div className="lg:col-span-1">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Plus className="h-5 w-5" />
-                      Create New Category
-                    </CardTitle>
-                    <CardDescription>
-                      Add a new service category
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <CategoryForm />
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Categories List */}
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Existing Categories</CardTitle>
-                    <CardDescription>
-                      Manage your service categories
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <CategoriesList />
-                  </CardContent>
-                </Card>
-              </div>
+          <TabsContent value="categories" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                    <Tag className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Add New Category</h2>
+                    <p className="text-sm text-gray-600">Create a new service category</p>
+                  </div>
+                </div>
+                <CategoryForm />
+              </Card>
+              
+              <Card className="p-6 border-0 shadow-sm bg-white">
+                <div className="flex items-center mb-6">
+                  <div className="h-10 w-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
+                    <List className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Existing Categories</h2>
+                    <p className="text-sm text-gray-600">Manage your current categories</p>
+                  </div>
+                </div>
+                <CategoriesList />
+              </Card>
             </div>
           </TabsContent>
         </Tabs>

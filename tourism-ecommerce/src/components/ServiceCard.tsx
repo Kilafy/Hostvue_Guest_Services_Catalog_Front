@@ -15,7 +15,7 @@ export default function ServiceCard({ service, className = '' }: ServiceCardProp
 
   return (
     <div className={`card card-hover ${className}`}>
-      <Link href={`/services/${service.id}`}>
+      <Link href={`/service?id=${service.id}`}>
         {/* Image */}
         <div className="relative h-48 w-full">
           <Image
