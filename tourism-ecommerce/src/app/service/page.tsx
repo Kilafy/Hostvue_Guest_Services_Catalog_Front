@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock, Users, Globe, Calendar, MapPin, Tag } from 'lucide-react';
 import Link from 'next/link';
+import { apiRequest } from '@/lib/api';
 
 interface Service {
   id: string;
@@ -63,14 +64,11 @@ function ServiceDetailsContent() {
 
   const fetchProviderDetails = useCallback(async (providerId: string) => {
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/providers/${providerId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch provider details');
-      }
-      const data = await response.json();
+      const data = await apiRequest<Provider>(`/api/providers/${providerId}`);
       setProvider(data);
     } catch (err) {
       console.error('Error fetching provider details:', err);
+      setProvider(null);
     }
   }, []);
 
@@ -78,11 +76,7 @@ function ServiceDetailsContent() {
     if (!serviceId) return;
     
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services/${serviceId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch service details');
-      }
-      const data = await response.json();
+      const data = await apiRequest<Service>(`/api/services/${serviceId}`);
       setService(data);
       
       if (data.providerId) {
@@ -90,6 +84,7 @@ function ServiceDetailsContent() {
       }
     } catch (err) {
       console.error('Error fetching service details:', err);
+      setService(null);
     }
   }, [serviceId, fetchProviderDetails]);
 
@@ -97,11 +92,7 @@ function ServiceDetailsContent() {
     if (!serviceId) return;
     
     try {
-      const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/media');
-      if (!response.ok) {
-        throw new Error('Failed to fetch media');
-      }
-      const allMedia = await response.json();
+      const allMedia = await apiRequest<Media[]>('/api/media');
       
       const serviceMedia = allMedia
         .filter((mediaItem: Media) => mediaItem.url.includes(serviceId))
@@ -110,6 +101,7 @@ function ServiceDetailsContent() {
       setMedia(serviceMedia);
     } catch (err) {
       console.error('Error fetching media:', err);
+      setMedia([]);
     } finally {
       setIsLoading(false);
     }
