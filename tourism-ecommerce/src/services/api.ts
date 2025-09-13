@@ -1,5 +1,5 @@
 // API Base Configuration
-const API_BASE_URL = 'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api';
+const API_BASE_URL = 'https://guests-services.munnity.app/api';
 
 // API Response Types based on the updated Swagger documentation
 export interface ApiService {
