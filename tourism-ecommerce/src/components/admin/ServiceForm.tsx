@@ -4,8 +4,18 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { servicesApi, providersApi } from '@/services/api';
-import { ApiProvider } from '@/services/api';
+
+interface ApiProvider {
+  id: string;
+  userId: string;
+  companyName?: string;
+  legalName?: string;
+  vatNumber?: string;
+  description?: string;
+  verified?: boolean;
+  createdAt: number[];
+  updatedAt?: number[];
+}
 
 export default function ServiceForm() {
   const [formData, setFormData] = useState({
@@ -30,7 +40,11 @@ export default function ServiceForm() {
 
   const loadProviders = async () => {
     try {
-      const providersData = await providersApi.getAllProviders();
+      const response = await fetch('/api/providers');
+      if (!response.ok) {
+        throw new Error('Failed to fetch providers');
+      }
+      const providersData = await response.json();
       setProviders(providersData);
     } catch (error) {
       console.error('Failed to load providers:', error);
@@ -51,7 +65,17 @@ export default function ServiceForm() {
         languageOffered: formData.languageOffered.split(',').map(lang => lang.trim()).filter(Boolean)
       };
 
-      await servicesApi.createService(serviceData);
+      const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create service');
+      }
       
       setMessage({ type: 'success', text: 'Service created successfully!' });
       
@@ -204,7 +228,12 @@ export default function ServiceForm() {
         />
       </div>
 
-      <Button type="submit" disabled={isLoading} className="w-full">
+      <Button 
+        type="submit" 
+        disabled={isLoading} 
+        className="w-full text-white hover:opacity-90 transition-colors"
+        style={{ backgroundColor: '#D87441' }}
+      >
         {isLoading ? 'Creating...' : 'Create Service'}
       </Button>
     </form>

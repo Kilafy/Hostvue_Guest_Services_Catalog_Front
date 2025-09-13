@@ -87,8 +87,6 @@ src/
 │   ├── Header.tsx          # Navigation and branding
 │   ├── Footer.tsx          # Site footer with links
 │   └── ServiceCard.tsx     # Service display component
-├── data/
-│   └── mockData.ts         # Sample tourism data
 ├── types/
 │   └── tourism.ts          # TypeScript interfaces
 └── app/

@@ -2,21 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Edit, Trash2, Tags } from 'lucide-react';
 import Link from 'next/link';
-
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { ApiCategory } from '@/services/api';
+import { EditCategoryModal } from './EditCategoryModal';
+import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
 
 export default function CategoriesList() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingCategory, setEditingCategory] = useState<ApiCategory | null>(null);
+  const { handleApiError } = useErrorHandler();
+  const { showSuccess } = useSuccessHandler();
 
   useEffect(() => {
     fetchCategories();
@@ -24,7 +22,7 @@ export default function CategoriesList() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories');
+      const response = await fetch('/api/categories');
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
@@ -44,19 +42,32 @@ export default function CategoriesList() {
     }
 
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories/${id}`, {
+      const response = await fetch(`/api/categories/${id}`, {
         method: 'DELETE',
       });
       
       if (!response.ok) {
-        throw new Error('Failed to delete category');
+        await handleApiError(response, 'delete category');
+        return;
       }
       
       setCategories(categories.filter(category => category.id !== id));
-    } catch (err) {
-      console.error('Error deleting category:', err);
-      alert('Failed to delete category');
+      showSuccess('Category Deleted', 'Category has been successfully deleted.');
+    } catch {
+      handleApiError(new Response(), 'delete category');
     }
+  };
+
+  const handleEdit = (category: ApiCategory) => {
+    setEditingCategory(category);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingCategory(null);
+  };
+
+  const handleUpdateSuccess = () => {
+    fetchCategories(); // Refresh the list
   };
 
   if (isLoading) {
@@ -83,9 +94,14 @@ export default function CategoriesList() {
   return (
     <div className="space-y-4">
       {categories.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-2">No categories found.</p>
-          <p className="text-sm text-gray-400">Create your first category using the form!</p>
+        <div className="text-center py-12">
+          <div className="flex justify-center mb-4">
+            <div className="p-4 bg-orange-50 rounded-full">
+              <Tags className="h-8 w-8 text-orange-400" />
+            </div>
+          </div>
+          <p className="text-gray-500 mb-2 text-lg font-medium">No categories found</p>
+          <p className="text-sm text-gray-400">Create your first category to organize your services!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -95,12 +111,15 @@ export default function CategoriesList() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-                    {category.description && (
-                      <p className="text-sm text-gray-600 mb-3">{category.description}</p>
+                    {category.slug && (
+                      <p className="text-sm text-gray-600 mb-3">Slug: {category.slug}</p>
                     )}
                     
                     <div className="text-xs text-gray-500">
-                      <span className="font-medium">Created:</span> {new Date(category.createdAt).toLocaleDateString()}
+                      <span className="font-medium">Created:</span> {category.createdAt && category.createdAt.length >= 3 
+                        ? new Date(category.createdAt[0], category.createdAt[1] - 1, category.createdAt[2]).toLocaleDateString()
+                        : 'Unknown'
+                      }
                     </div>
                   </div>
                   
@@ -111,7 +130,12 @@ export default function CategoriesList() {
                         View
                       </Button>
                     </Link>
-                    <Button variant="outline" size="sm" className="h-8 px-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-8 px-2"
+                      onClick={() => handleEdit(category)}
+                    >
                       <Edit className="h-3 w-3 mr-1" />
                       Edit
                     </Button>
@@ -130,6 +154,14 @@ export default function CategoriesList() {
             </Card>
           ))}
         </div>
+      )}
+      
+      {editingCategory && (
+        <EditCategoryModal
+          category={editingCategory}
+          onClose={handleCloseEdit}
+          onUpdate={handleUpdateSuccess}
+        />
       )}
     </div>
   );

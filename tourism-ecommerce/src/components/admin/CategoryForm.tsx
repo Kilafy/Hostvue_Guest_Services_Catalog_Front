@@ -34,7 +34,7 @@ export default function CategoryForm() {
     setMessage(null);
 
     try {
-      const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories', {
+      const response = await fetch('/api/categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,8 @@ export default function CategoryForm() {
         <Button 
           type="submit" 
           disabled={isLoading} 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full text-white hover:opacity-90 transition-colors"
+          style={{ backgroundColor: '#D87441' }}
         >
           {isLoading ? 'Creating...' : 'Create Category'}
         </Button>

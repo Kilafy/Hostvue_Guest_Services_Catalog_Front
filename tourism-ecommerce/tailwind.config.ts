@@ -12,7 +12,101 @@ const config: Config = {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        // Hostvue Brand Colors (extracted from images)
+        
+        // Design System Colors
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+        
+        secondary: {
+          emerald: {
+            50: '#ecfdf5',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+          },
+          amber: {
+            50: '#fffbeb',
+            500: '#f59e0b',
+            600: '#d97706',
+            700: '#b45309',
+          },
+          purple: {
+            50: '#faf5ff',
+            500: '#8b5cf6',
+            600: '#7c3aed',
+            700: '#6d28d9',
+          },
+          rose: {
+            50: '#fff1f2',
+            500: '#f43f5e',
+            600: '#e11d48',
+            700: '#be123c',
+          },
+          indigo: {
+            50: '#eef2ff',
+            500: '#6366f1',
+            600: '#4f46e5',
+            700: '#4338ca',
+          },
+          orange: {
+            50: '#fff7ed',
+            500: '#f97316',
+            600: '#ea580c',
+            700: '#c2410c',
+          }
+        },
+
+        neutral: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+        },
+
+        status: {
+          success: {
+            50: '#f0fdf4',
+            500: '#22c55e',
+            600: '#16a34a',
+            700: '#15803d',
+          },
+          warning: {
+            50: '#fffbeb',
+            500: '#f59e0b',
+            600: '#d97706',
+            700: '#b45309',
+          },
+          error: {
+            50: '#fef2f2',
+            500: '#ef4444',
+            600: '#dc2626',
+            700: '#b91c1c',
+          },
+          info: {
+            50: '#eff6ff',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8',
+          }
+        },
+
+        // Legacy Hostvue Brand Colors (maintained for compatibility)
         hostvue: {
           primary: "#D87441", // Main orange/coral from images
           secondary: "#C86635", // Darker orange variation
@@ -23,6 +117,7 @@ const config: Config = {
           light: "#F7F7F7", // Light background
           cream: "#FAF8F5", // Warm cream background
         },
+        
         // Tourism themed colors
         tourism: {
           ocean: "#0EA5E9", // Blue for beach/water activities

@@ -12,23 +12,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-sm",
           {
-            "bg-primary text-primary-foreground hover:bg-primary/90": variant === 'default',
-            "bg-destructive text-destructive-foreground hover:bg-destructive/90": variant === 'destructive',
-            "border border-input bg-background hover:bg-accent hover:text-accent-foreground": variant === 'outline',
-            "bg-secondary text-secondary-foreground hover:bg-secondary/80": variant === 'secondary',
-            "hover:bg-accent hover:text-accent-foreground": variant === 'ghost',
-            "text-primary underline-offset-4 hover:underline": variant === 'link',
+            "text-white hover:opacity-90 active:opacity-80 shadow-orange-500/25 hover:shadow-orange-500/40": variant === 'default',
+            "bg-red-500 text-white hover:bg-red-600 active:bg-red-700 shadow-red-500/25 hover:shadow-red-500/40": variant === 'destructive',
+            "border border-neutral-300 bg-white hover:bg-neutral-50 hover:border-neutral-400 text-neutral-700 active:bg-neutral-100": variant === 'outline',
+            "bg-neutral-100 text-neutral-800 hover:bg-neutral-200 active:bg-neutral-300": variant === 'secondary',
+            "hover:bg-neutral-100 hover:text-neutral-800 text-neutral-600": variant === 'ghost',
+            "text-orange-600 underline-offset-4 hover:underline hover:text-orange-700": variant === 'link',
           },
           {
-            "h-10 px-4 py-2": size === 'default',
-            "h-9 rounded-md px-3": size === 'sm',
-            "h-11 rounded-md px-8": size === 'lg',
+            "h-10 px-6 py-2": size === 'default',
+            "h-8 rounded-md px-3 text-xs": size === 'sm',
+            "h-12 rounded-lg px-10 text-base": size === 'lg',
             "h-10 w-10": size === 'icon',
           },
           className
         )}
+        style={variant === 'default' ? { backgroundColor: '#D87441' } : undefined}
         ref={ref}
         {...props}
       />

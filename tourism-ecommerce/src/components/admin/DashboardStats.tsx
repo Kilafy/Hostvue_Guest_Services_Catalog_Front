@@ -26,9 +26,9 @@ export default function DashboardStats() {
     try {
       // Fetch all data in parallel
       const [servicesRes, locationsRes, categoriesRes] = await Promise.all([
-        fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services'),
-        fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/locations'),
-        fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories')
+        fetch('/api/services'),
+        fetch('/api/locations'),
+        fetch('/api/categories')
       ]);
 
       const [services, locations, categories] = await Promise.all([

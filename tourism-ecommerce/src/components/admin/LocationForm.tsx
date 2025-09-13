@@ -41,7 +41,7 @@ export default function LocationForm() {
     setMessage(null);
 
     try {
-      const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/locations', {
+      const response = await fetch('/api/locations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +168,8 @@ export default function LocationForm() {
         <Button 
           type="submit" 
           disabled={isLoading} 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full text-white hover:opacity-90 transition-colors"
+          style={{ backgroundColor: '#D87441' }}
         >
           {isLoading ? 'Creating...' : 'Create Location'}
         </Button>

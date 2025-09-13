@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
   try {
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/media',
+      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/providers',
       {
         method: 'GET',
         headers: {
@@ -15,7 +15,7 @@ export async function GET() {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: `Failed to fetch media: ${response.status}` },
+        { error: `Failed to fetch providers: ${response.status}` },
         { status: response.status }
       );
     }
@@ -30,7 +30,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error proxying media request:', error);
+    console.error('Error proxying providers request:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/media',
+      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/providers',
       {
         method: 'POST',
         headers: {
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Media creation failed:', errorData);
+      console.error('Provider creation failed:', errorData);
       return NextResponse.json(
-        { error: `Failed to create media: ${response.status}` },
+        { error: `Failed to create provider: ${response.status}` },
         { status: response.status }
       );
     }
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error creating media:', error);
+    console.error('Error creating provider:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
