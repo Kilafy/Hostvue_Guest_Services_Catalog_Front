@@ -1,40 +1,77 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2, Image as ImageIcon, Video, Copy, Upload } from 'lucide-react';
 import Image from 'next/image';
-import { ApiMedia } from '@/services/api';
+import { ApiMedia, servicesApi, locationsApi, providersApi, categoriesApi } from '@/services/api';
 import { EditMediaModal } from './EditMediaModal';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
 
+interface EnhancedMedia extends ApiMedia {
+  ownerTitle?: string;
+}
+
 export default function MediaList() {
-  const [media, setMedia] = useState<ApiMedia[]>([]);
+  const [media, setMedia] = useState<EnhancedMedia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingMedia, setEditingMedia] = useState<ApiMedia | null>(null);
+  const [editingMedia, setEditingMedia] = useState<EnhancedMedia | null>(null);
   const { handleApiError } = useErrorHandler();
   const { showSuccess } = useSuccessHandler();
 
-  useEffect(() => {
-    fetchMedia();
-  }, []);
+  const fetchOwnerTitle = async (ownerType: string, ownerId: string): Promise<string> => {
+    try {
+      switch (ownerType) {
+        case 'service':
+          const service = await servicesApi.getServiceById(ownerId);
+          return service.title;
+        case 'location':
+          const location = await locationsApi.getLocationById(ownerId);
+          return `${location.city}, ${location.region}, ${location.country}`;
+        case 'provider':
+          const provider = await providersApi.getProviderById(ownerId);
+          return provider.companyName || provider.legalName || `Provider ${ownerId}`;
+        case 'category':
+          const category = await categoriesApi.getCategoryById(ownerId);
+          return category.name;
+        default:
+          return `${ownerType}#${ownerId}`;
+      }
+    } catch (error) {
+      console.error(`Error fetching ${ownerType} ${ownerId}:`, error);
+      return `${ownerType}#${ownerId}`;
+    }
+  };
 
-  const fetchMedia = async () => {
+  const fetchMedia = useCallback(async () => {
     try {
       const response = await fetch('/api/media');
       if (!response.ok) {
         throw new Error('Failed to fetch media');
       }
-      const data = await response.json();
-      setMedia(data);
+      const data: ApiMedia[] = await response.json();
+      
+      // Enhance media with owner titles
+      const enhancedMedia = await Promise.all(
+        data.map(async (item) => {
+          const ownerTitle = await fetchOwnerTitle(item.ownerType, item.ownerId);
+          return { ...item, ownerTitle };
+        })
+      );
+      
+      setMedia(enhancedMedia);
     } catch (err) {
       console.error('Error fetching media:', err);
       setError('Failed to load media');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchMedia();
+  }, [fetchMedia]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this media?')) {
@@ -173,7 +210,10 @@ export default function MediaList() {
                       
                       <div className="flex flex-wrap gap-4 text-xs text-gray-500 mb-3">
                         <span className="flex items-center gap-1">
-                          <span className="font-medium">Owner:</span> {item.ownerType}#{item.ownerId}
+                          <span className="font-medium">Owner Type:</span> {item.ownerType}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="font-medium">Owner:</span> {item.ownerTitle || `${item.ownerType}#${item.ownerId}`}
                         </span>
                         {item.position !== undefined && (
                           <span className="flex items-center gap-1">
