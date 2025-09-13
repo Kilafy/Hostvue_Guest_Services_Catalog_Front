@@ -14,7 +14,10 @@
   - ✅ Added loading states for data fetching in forms
   - ✅ Added image preview functionality in both MediaForm and EditMediaModal
   - ✅ Enhanced MediaList to show owner type and owner title with proper data fetching
-  - ✅ Improved user experience with meaningful owner information displayechnology Stack:** Next.js 15.4.7, React 19.1.0, TypeScript, Tailwind CSS, Radix UI  
+  - ✅ Improved user experience with meaningful owner information display
+  - ✅ Standardized ServiceForm and EditServiceModal dropdown styling to match MediaForm
+  - ✅ Added text truncation and hover effects to provider selections
+  - ✅ Applied consistent background, shadow, and border styling across all admin dropdownsechnology Stack:** Next.js 15.4.7, React 19.1.0, TypeScript, Tailwind CSS, Radix UI  
 **Backend Integration:** Kilafy API (kilafy-backed.us-east-1.elasticbeanstalk.com/api)  
 **Last Updated:** December 2024
 
