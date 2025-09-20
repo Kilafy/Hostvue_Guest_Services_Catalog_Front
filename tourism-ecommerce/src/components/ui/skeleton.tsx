@@ -92,3 +92,39 @@ export function DestinationCardSkeleton() {
     </div>
   );
 }
+
+export function ServiceListItemSkeleton() {
+  return (
+    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          {/* Title skeleton */}
+          <Skeleton className="h-5 w-64 mb-2" />
+          
+          {/* Description skeleton */}
+          <Skeleton className="h-4 w-full mb-1" />
+          <Skeleton className="h-4 w-3/4 mb-3" />
+          
+          {/* Meta info skeleton */}
+          <div className="flex flex-wrap gap-4">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 ml-4">
+          {/* Status badge skeleton */}
+          <Skeleton className="h-6 w-16 rounded-full" />
+          
+          {/* Action buttons skeleton */}
+          <div className="flex gap-2">
+            <Skeleton className="h-8 w-16 rounded" />
+            <Skeleton className="h-8 w-14 rounded" />
+            <Skeleton className="h-8 w-18 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import EditServiceModal from './EditServiceModal';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
 import { servicesApi, ApiService } from '@/services/api';
+import { ServiceListItemSkeleton } from '@/components/ui/skeleton';
 
 export default function ServicesList() {
   const [services, setServices] = useState<ApiService[]>([]);
@@ -55,10 +56,11 @@ export default function ServicesList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-          <p className="text-gray-500">Loading services...</p>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <ServiceListItemSkeleton key={index} />
+          ))}
         </div>
       </div>
     );
