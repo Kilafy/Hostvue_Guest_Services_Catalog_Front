@@ -97,7 +97,19 @@ class ApiClient {
         throw new Error(errorMessage);
       }
 
-      return await response.json();
+      // Handle 204 No Content responses (typically from DELETE operations)
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      // For responses with content, parse JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      }
+      
+      // If no JSON content type, return undefined for void responses
+      return undefined as T;
     } catch (error) {
       if (error instanceof Error) {
         console.warn(`API request failed for ${endpoint}:`, error.message);
@@ -183,7 +195,7 @@ export const servicesApi = {
       providerId: serviceData.providerId
     };
     
-    formData.append('service', new Blob([JSON.stringify(serviceJson)], { 
+    formData.append('service', new File([JSON.stringify(serviceJson)], 'service.json', { 
       type: 'application/json' 
     }));
     
@@ -234,6 +246,109 @@ export const servicesApi = {
   // Update service
   updateService: (id: string, service: Partial<ApiService>): Promise<ApiService> =>
     apiClient.put<ApiService>(`/services/${id}`, service),
+
+  // Update service with image upload (multipart form data)
+  updateServiceWithImage: async (id: string, serviceData: {
+    title?: string;
+    shortDescription?: string;
+    longDescription?: string;
+    durationMinutes?: number;
+    languageOffered?: string[];
+    maxCapacity?: number;
+    minCapacity?: number;
+    status?: string;
+    providerId?: string;
+  }, imageFile?: File): Promise<ApiService> => {
+    const formData = new FormData();
+    
+    // Add service data as JSON (include all provided fields)
+    const serviceJson: Partial<{
+      title: string;
+      shortDescription: string;
+      longDescription: string;
+      durationMinutes: number;
+      languageOffered: string[];
+      maxCapacity: number;
+      minCapacity: number;
+      status: string;
+      providerId: string;
+    }> = {};
+    
+    // Include all fields that are provided (less restrictive validation)
+    if (serviceData.title !== undefined) {
+      serviceJson.title = serviceData.title;
+    }
+    if (serviceData.shortDescription !== undefined) {
+      serviceJson.shortDescription = serviceData.shortDescription;
+    }
+    if (serviceData.longDescription !== undefined) {
+      serviceJson.longDescription = serviceData.longDescription;
+    }
+    if (serviceData.durationMinutes !== undefined) {
+      serviceJson.durationMinutes = serviceData.durationMinutes;
+    }
+    if (serviceData.languageOffered !== undefined) {
+      serviceJson.languageOffered = serviceData.languageOffered;
+    }
+    if (serviceData.maxCapacity !== undefined) {
+      serviceJson.maxCapacity = serviceData.maxCapacity;
+    }
+    if (serviceData.minCapacity !== undefined) {
+      serviceJson.minCapacity = serviceData.minCapacity;
+    }
+    if (serviceData.status !== undefined) {
+      serviceJson.status = serviceData.status;
+    }
+    if (serviceData.providerId !== undefined) {
+      serviceJson.providerId = serviceData.providerId;
+    }
+    
+    // Create a properly formatted JSON file-like blob
+    const jsonString = JSON.stringify(serviceJson);
+    const serviceBlob = new File([jsonString], 'service.json', { 
+      type: 'application/json' 
+    });
+    formData.append('service', serviceBlob);
+    
+    // Add image file if provided
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+    
+    const url = `${API_BASE_URL}/services/${id}/with-image`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        body: formData,
+        // Don't set Content-Type header - let browser set it with boundary for multipart
+      });
+
+      if (!response.ok) {
+        let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage += ` - ${errorData.message}`;
+          }
+        } catch {
+          // If we can't parse error response, use the status text
+        }
+        
+        console.warn(`API request failed for ${url}:`, errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.warn(`API request failed for ${url}:`, error.message);
+      } else {
+        console.warn(`API request failed for ${url}:`, error);
+      }
+      throw error;
+    }
+  },
 
   // Delete service
   deleteService: (id: string): Promise<void> =>
@@ -318,7 +433,7 @@ export const locationsApi = {
       slug: locationData.slug || ''
     };
     
-    formData.append('location', new Blob([JSON.stringify(locationJson)], { 
+    formData.append('location', new File([JSON.stringify(locationJson)], 'location.json', { 
       type: 'application/json' 
     }));
     

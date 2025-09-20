@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,7 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ModalActions } from '@/components/ui/modal-actions';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
-import { providersApi } from '@/services/api';
+import { Upload, X } from 'lucide-react';
+import { servicesApi, providersApi } from '@/services/api';
+import Image from 'next/image';
 
 interface Service {
   id: string;
@@ -54,6 +56,9 @@ export default function EditServiceModal({ service, isOpen, onClose, onUpdate }:
     languageOffered: ''
   });
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [providers, setProviders] = useState<ApiProvider[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -88,6 +93,28 @@ export default function EditServiceModal({ service, isOpen, onClose, onUpdate }:
     }
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -95,36 +122,45 @@ export default function EditServiceModal({ service, isOpen, onClose, onUpdate }:
 
     try {
       const serviceData = {
-        ...formData,
+        title: formData.title,
+        shortDescription: formData.shortDescription,
+        longDescription: formData.longDescription,
         durationMinutes: formData.durationMinutes ? parseInt(formData.durationMinutes) : undefined,
         maxCapacity: formData.maxCapacity ? parseInt(formData.maxCapacity) : undefined,
         minCapacity: formData.minCapacity ? parseInt(formData.minCapacity) : undefined,
+        status: formData.status,
+        providerId: formData.providerId || service.providerId, // Always include providerId
         languageOffered: formData.languageOffered.split(',').map(lang => lang.trim()).filter(Boolean)
       };
 
-      const response = await fetch(`/api/services/${service.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(serviceData),
-      });
-
-      if (!response.ok) {
-        await handleApiError(response, 'update service');
-        return;
-      }
-
-      const updatedService = await response.json();
+      // Update service using the correct API method with image support
+      await servicesApi.updateServiceWithImage(service.id, serviceData, selectedImage || undefined);
+      
       showSuccess('Service Updated', 'Service has been successfully updated!');
-      onUpdate(updatedService);
+      
+      // Update the service object with the correct type
+      const serviceUpdate: Service = {
+        ...service,
+        title: serviceData.title,
+        shortDescription: serviceData.shortDescription || '',
+        longDescription: serviceData.longDescription || '',
+        durationMinutes: serviceData.durationMinutes || 0,
+        maxCapacity: serviceData.maxCapacity || 0,
+        minCapacity: serviceData.minCapacity || 0,
+        status: serviceData.status,
+        providerId: serviceData.providerId || service.providerId, // Keep original if not changed
+        languageOffered: serviceData.languageOffered.join(', ')
+      };
+      
+      onUpdate(serviceUpdate);
       
       setTimeout(() => {
         onClose();
         setMessage(null);
       }, 1000);
-    } catch {
-      handleApiError(new Response(), 'update service');
+    } catch (error) {
+      console.error('Error updating service:', error);
+      setMessage({ type: 'error', text: 'Failed to update service. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +203,48 @@ export default function EditServiceModal({ service, isOpen, onClose, onUpdate }:
                 placeholder="Enter service title"
                 required
               />
+            </div>
+
+            {/* Image Upload Section */}
+            <div>
+              <Label htmlFor="image">Service Image</Label>
+              <div className="mt-2">
+                {imagePreview ? (
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200">
+                    <Image
+                      src={imagePreview}
+                      alt="Service preview"
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
+                  >
+                    <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500 text-center">
+                      Click to upload service image<br />
+                      <span className="text-xs text-gray-400">PNG, JPG up to 10MB</span>
+                    </p>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+              </div>
             </div>
 
             <div>
