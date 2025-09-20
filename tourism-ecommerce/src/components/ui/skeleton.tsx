@@ -128,3 +128,44 @@ export function ServiceListItemSkeleton() {
     </div>
   );
 }
+
+export function LocationCardSkeleton() {
+  return (
+    <div className="bg-white rounded-3xl overflow-hidden shadow-card">
+      {/* Image skeleton */}
+      <div className="aspect-video w-full">
+        <Skeleton className="w-full h-full" />
+      </div>
+      
+      {/* Content skeleton */}
+      <div className="p-6">
+        {/* City name skeleton */}
+        <Skeleton className="h-6 w-32 mb-2" />
+        
+        {/* Location info skeleton */}
+        <div className="flex items-center mb-2">
+          <Skeleton className="h-4 w-4 mr-2 rounded-full" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+        
+        {/* Coordinates skeleton */}
+        <div className="flex items-center mb-4">
+          <Skeleton className="h-3 w-3 mr-1 rounded-full" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+        
+        {/* Slug skeleton */}
+        <Skeleton className="h-6 w-20 mb-4 rounded-lg" />
+        
+        {/* Action section skeleton */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <Skeleton className="h-4 w-28" />
+          <div className="flex items-center">
+            <Skeleton className="h-4 w-8 mr-1" />
+            <Skeleton className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

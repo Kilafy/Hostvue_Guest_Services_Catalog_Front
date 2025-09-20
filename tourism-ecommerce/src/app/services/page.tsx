@@ -5,6 +5,7 @@ import { Filter, Grid, List } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
+import { ServiceCardSkeleton } from '@/components/ui/skeleton';
 import { useServicesPageData } from '@/hooks/useData';
 
 export default function ServicesPage() {
@@ -23,9 +24,49 @@ export default function ServicesPage() {
     return (
       <div className="min-h-screen bg-hostvue-light" style={{ backgroundColor: '#F7F7F7' }}>
         <Header />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-hostvue-gray">Loading...</div>
-        </div>
+        
+        {/* Hero Section Skeleton */}
+        <section className="bg-gradient-to-br from-hostvue-primary to-hostvue-secondary text-white py-16" style={{ background: 'linear-gradient(135deg, #D87441 0%, #C86635 100%)' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="font-display font-bold text-4xl md:text-5xl mb-4" style={{ color: '#FFFFFF' }}>
+                Explore All Experiences
+              </h1>
+              <p className="text-xl max-w-2xl mx-auto" style={{ color: '#FFFFFF' }}>
+                Discover amazing tours and activities around the world. Filter by category, 
+                destination, price, and more to find your perfect experience.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Filters Skeleton */}
+        <section className="py-8 bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="text-hostvue-gray" style={{ color: '#6B7280' }}>
+                Loading services...
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-16 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Services Grid Skeleton */}
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <ServiceCardSkeleton key={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     );

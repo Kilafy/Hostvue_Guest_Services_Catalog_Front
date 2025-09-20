@@ -5,7 +5,7 @@ import { Filter, Grid, List, MapPin, Search } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LocationCard from '@/components/LocationCard';
-import { ServiceListItemSkeleton } from '@/components/ui/skeleton';
+import { LocationCardSkeleton } from '@/components/ui/skeleton';
 import { locationsApi, ApiLocation } from '@/services/api';
 
 export default function LocationsPage() {
@@ -72,13 +72,49 @@ export default function LocationsPage() {
     return (
       <div className="min-h-screen bg-hostvue-light" style={{ backgroundColor: '#F7F7F7' }}>
         <Header />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <ServiceListItemSkeleton key={index} />
-            ))}
+        
+        {/* Hero Section */}
+        <section className="bg-gradient-to-br from-hostvue-primary to-hostvue-secondary text-white py-16" style={{ background: 'linear-gradient(135deg, #D87441 0%, #C86635 100%)' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="font-display font-bold text-4xl md:text-5xl mb-4" style={{ color: '#FFFFFF' }}>
+                Discover Amazing Destinations
+              </h1>
+              <p className="text-xl max-w-2xl mx-auto" style={{ color: '#FFFFFF' }}>
+                Explore stunning locations around the world and plan your next adventure.
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Filters Section Skeleton */}
+        <section className="py-8 bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="text-hostvue-gray" style={{ color: '#6B7280' }}>
+                Loading destinations...
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-24 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-16 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Locations Grid Skeleton */}
+        <section className="py-12 min-h-[600px]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <LocationCardSkeleton key={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     );
