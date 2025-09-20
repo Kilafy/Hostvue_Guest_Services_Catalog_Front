@@ -6,29 +6,13 @@ import { Eye, Edit, Trash2, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import EditServiceModal from './EditServiceModal';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
-
-interface Service {
-  id: string;
-  title: string;
-  shortDescription: string;
-  longDescription: string;
-  durationMinutes: number;
-  status: string;
-  minCapacity: number;
-  maxCapacity: number;
-  languageOffered: string;
-  providerId: string;
-  categoryIds?: string[];
-  locationIds?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { servicesApi, ApiService } from '@/services/api';
 
 export default function ServicesList() {
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<ApiService[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [editingService, setEditingService] = useState<ApiService | null>(null);
   const { handleApiError } = useErrorHandler();
   const { showSuccess } = useSuccessHandler();
 
@@ -38,11 +22,7 @@ export default function ServicesList() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('/api/services');
-      if (!response.ok) {
-        throw new Error('Failed to fetch services');
-      }
-      const data = await response.json();
+      const data = await servicesApi.getAllServices();
       setServices(data);
     } catch (err) {
       console.error('Error fetching services:', err);
@@ -52,7 +32,7 @@ export default function ServicesList() {
     }
   };
 
-  const handleUpdate = (updatedService: Service) => {
+  const handleUpdate = (updatedService: ApiService) => {
     setServices(services.map(service => 
       service.id === updatedService.id ? updatedService : service
     ));
@@ -64,18 +44,11 @@ export default function ServicesList() {
     }
 
     try {
-      const response = await fetch(`/api/services/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        await handleApiError(response, 'delete service');
-        return;
-      }
-      
+      await servicesApi.deleteService(id);
       setServices(services.filter(service => service.id !== id));
       showSuccess('Service Deleted', 'Service has been successfully deleted.');
-    } catch {
+    } catch (error) {
+      console.error('Error deleting service:', error);
       handleApiError(new Response(), 'delete service');
     }
   };
@@ -121,17 +94,21 @@ export default function ServicesList() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{service.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{service.shortDescription}</p>
+                    <p className="text-sm text-gray-600 mb-3">{service.shortDescription || 'No description available'}</p>
                     
                     <div className="flex flex-wrap gap-4 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
-                        <span className="font-medium">Duration:</span> {service.durationMinutes} min
+                        <span className="font-medium">Duration:</span> {service.durationMinutes || 0} min
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="font-medium">Capacity:</span> {service.minCapacity}-{service.maxCapacity}
+                        <span className="font-medium">Capacity:</span> {service.minCapacity || 0}-{service.maxCapacity || 0}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="font-medium">Language:</span> {service.languageOffered}
+                        <span className="font-medium">Language:</span> {
+                          Array.isArray(service.languageOffered) 
+                            ? service.languageOffered.join(', ') 
+                            : service.languageOffered || 'Not specified'
+                        }
                       </span>
                     </div>
                   </div>
@@ -142,7 +119,7 @@ export default function ServicesList() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {service.status}
+                      {service.status || 'unknown'}
                     </span>
                     
                     <div className="flex gap-2">
@@ -181,10 +158,10 @@ export default function ServicesList() {
 
       {editingService && (
         <EditServiceModal
-          service={editingService}
+          service={editingService as unknown as Parameters<typeof EditServiceModal>[0]['service']}
           isOpen={!!editingService}
           onClose={() => setEditingService(null)}
-          onUpdate={handleUpdate}
+          onUpdate={handleUpdate as unknown as Parameters<typeof EditServiceModal>[0]['onUpdate']}
         />
       )}
     </div>
