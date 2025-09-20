@@ -48,7 +48,7 @@ export default function ServicesPage() {
   const cities = servicesPageData?.cities || [];
 
   const filteredServices = tourismServices.filter(service => {
-    if (filters.category && service.category.id !== filters.category) return false;
+    if (filters.category && service.category?.id !== filters.category) return false;
     if (filters.city && service.city !== filters.city) return false;
     if (service.price < filters.priceRange[0] || service.price > filters.priceRange[1]) return false;
     if (service.rating < filters.rating) return false;

@@ -35,9 +35,13 @@ export default function ServiceCard({ service, className = '' }: ServiceCardProp
           {/* Category Badge */}
           <div 
             className="absolute top-3 right-3 px-2 py-1 rounded-lg text-xs font-medium text-white"
-            style={{ backgroundColor: service.category.color }}
+            style={{ backgroundColor: service.category?.color || '#6B7280' }}
           >
-            {service.category.icon} {service.category.name}
+            {service.category ? (
+              `${service.category.icon} ${service.category.name}`
+            ) : (
+              '❓ Category not found'
+            )}
           </div>
         </div>
 

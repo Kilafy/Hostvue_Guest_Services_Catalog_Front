@@ -53,9 +53,13 @@ export default function ServiceDetailPage({ service }: ServiceDetailProps) {
               <div className="flex items-center justify-between mb-4">
                 <div 
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
-                  style={{ backgroundColor: service.category.color }}
+                  style={{ backgroundColor: service.category?.color || '#6B7280' }}
                 >
-                  {service.category.icon} {service.category.name}
+                  {service.category ? (
+                    `${service.category.icon} ${service.category.name}`
+                  ) : (
+                    '❓ Category not found'
+                  )}
                 </div>
                 <div className="flex items-center space-x-2">
                   <button className="p-2 text-hostvue-gray hover:text-hostvue-primary transition-colors">

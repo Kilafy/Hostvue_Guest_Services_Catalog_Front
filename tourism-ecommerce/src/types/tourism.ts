@@ -11,7 +11,7 @@ export interface TourismService {
   duration: string;
   rating: number;
   reviewCount: number;
-  category: ServiceCategory;
+  category: ServiceCategory | null; // Category can be null if not found
   city: string;
   country: string;
   location?: {

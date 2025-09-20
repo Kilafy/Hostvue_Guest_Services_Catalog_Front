@@ -73,6 +73,57 @@ const getDefaultImageForService = (): string => {
   return DEFAULT_IMAGES.tour;
 };
 
+// Helper function to generate consistent featured status based on service ID
+const getConsistentFeaturedStatus = (serviceId: string): boolean => {
+  // Use a simple hash of the service ID to determine featured status
+  // This will always return the same result for the same ID
+  let hash = 0;
+  for (let i = 0; i < serviceId.length; i++) {
+    const char = serviceId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  // Use absolute value and modulo to get a consistent boolean
+  // This will make roughly 30% of services featured
+  return Math.abs(hash) % 10 < 3;
+};
+
+// Helper function to generate consistent price based on service ID
+const getConsistentPrice = (serviceId: string): number => {
+  let hash = 0;
+  for (let i = 0; i < serviceId.length; i++) {
+    const char = serviceId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  // Generate price between 50-250 based on hash
+  return 50 + (Math.abs(hash) % 200);
+};
+
+// Helper function to generate consistent rating based on service ID
+const getConsistentRating = (serviceId: string): number => {
+  let hash = 0;
+  for (let i = 0; i < serviceId.length; i++) {
+    const char = serviceId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  // Generate rating between 8.5-10.0 based on hash
+  return 8.5 + ((Math.abs(hash) % 150) / 100);
+};
+
+// Helper function to generate consistent review count based on service ID
+const getConsistentReviewCount = (serviceId: string): number => {
+  let hash = 0;
+  for (let i = 0; i < serviceId.length; i++) {
+    const char = serviceId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  // Generate review count between 50-550 based on hash
+  return 50 + (Math.abs(hash) % 500);
+};
+
 const mapApiServiceToTourismService = (
   apiService: ApiService
 ): TourismService => {
@@ -80,16 +131,7 @@ const mapApiServiceToTourismService = (
   const imageUrl = apiService.imageUrl || getDefaultImageForService();
   const imageGallery = apiService.imageUrl ? [apiService.imageUrl] : [];
 
-  // Create a mock category if we can't find one
-  const category: ServiceCategory = {
-    id: 'unknown',
-    name: 'General Services',
-    slug: 'general-services',
-    icon: '🌟',
-    color: '#DDA0DD',
-    description: 'Various services',
-    serviceCount: 0
-  };
+  // Note: Category will be set to null if not found - services without categories will show "Category not found"
 
   return {
     id: apiService.id,
@@ -97,16 +139,16 @@ const mapApiServiceToTourismService = (
     description: apiService.shortDescription || apiService.longDescription || 'No description available',
     shortDescription: apiService.shortDescription || 'No short description available',
     fullDescription: apiService.longDescription || apiService.shortDescription || 'No detailed description available',
-    price: Math.floor(Math.random() * 200) + 50, // Random price since not in API
+    price: getConsistentPrice(apiService.id), // Consistent price based on ID
     currency: 'USD',
     duration: formatDuration(apiService.durationMinutes),
     maxGuests: apiService.maxCapacity || 8,
     minGuests: apiService.minCapacity || 1,
-    rating: 8.5 + Math.random() * 1.5, // Random rating since not in API
-    reviewCount: Math.floor(Math.random() * 500) + 50, // Random review count
+    rating: getConsistentRating(apiService.id), // Consistent rating based on ID
+    reviewCount: getConsistentReviewCount(apiService.id), // Consistent review count based on ID
     imageUrl,
     imageGallery,
-    category,
+    category: null, // Category will be null if not found - to be handled in UI
     location: {
       latitude: 0, // Default since service doesn't have location in current API
       longitude: 0
@@ -135,7 +177,7 @@ const mapApiServiceToTourismService = (
     meetingPoint: 'To be confirmed',
     cancellationPolicy: 'Free cancellation up to 24 hours before the activity',
     tags: [apiService.status || 'active'],
-    featured: Math.random() > 0.7 // Random featured status
+    featured: getConsistentFeaturedStatus(apiService.id) // Deterministic featured status based on ID
   };
 };
 
@@ -278,7 +320,7 @@ class DataService {
   private updateServiceCounts(services: TourismService[], categories: ServiceCategory[], cities: City[]) {
     // Update category service counts
     categories.forEach(category => {
-      category.serviceCount = services.filter(service => service.category.id === category.id).length;
+      category.serviceCount = services.filter(service => service.category?.id === category.id).length;
     });
 
     // Update city service counts
@@ -330,7 +372,7 @@ class DataService {
     try {
       // Since the API doesn't have category filtering, get all services and filter client-side
       const allServices = await this.getAllServices();
-      return allServices.filter(service => service.category.id === categoryId);
+      return allServices.filter(service => service.category?.id === categoryId);
     } catch (error) {
       console.error('Failed to fetch services by category:', error);
       return [];
