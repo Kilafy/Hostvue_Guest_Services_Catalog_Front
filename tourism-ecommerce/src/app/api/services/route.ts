@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createApiUrl, API_HEADERS, CORS_HEADERS, handleApiError } from '@/lib/api-routes';
 
 export async function GET() {
   try {
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services',
+      createApiUrl('/services'),
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: API_HEADERS,
       }
     );
 
@@ -23,18 +21,10 @@ export async function GET() {
     const data = await response.json();
     
     return NextResponse.json(data, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+      headers: CORS_HEADERS,
     });
   } catch (error) {
-    console.error('Error proxying services request:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error proxying services request');
   }
 }
 
@@ -43,13 +33,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services',
+      createApiUrl('/services'),
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: API_HEADERS,
         body: JSON.stringify(body),
       }
     );
@@ -67,28 +54,16 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(data, {
       status: 201,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+      headers: CORS_HEADERS,
     });
   } catch (error) {
-    console.error('Error creating service:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error creating service');
   }
 }
 
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    headers: CORS_HEADERS,
   });
 }

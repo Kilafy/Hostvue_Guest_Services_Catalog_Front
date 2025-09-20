@@ -56,7 +56,7 @@ function LocationDetailsContent() {
     if (!locationId) return;
     
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/locations/${locationId}`);
+      const response = await fetch(`https://guests-services.munnity.app/api/locations/${locationId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch location details');
       }
@@ -72,7 +72,7 @@ function LocationDetailsContent() {
     if (!locationId) return;
     
     try {
-      const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/media');
+      const response = await fetch('https://guests-services.munnity.app/api/media');
       if (!response.ok) {
         throw new Error('Failed to fetch media');
       }

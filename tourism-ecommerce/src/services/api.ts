@@ -1,5 +1,5 @@
 // API Base Configuration
-const API_BASE_URL = 'https://guests-services.munnity.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://guests-services.munnity.app/api';
 
 // API Response Types based on the updated Swagger documentation
 export interface ApiService {

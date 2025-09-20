@@ -2,7 +2,7 @@
 
 import fetch from 'node-fetch';
 
-const API_BASE_URL = 'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api';
+const API_BASE_URL = 'https://guests-services.munnity.app/api';
 
 // Realistic tourism data
 const providers = [

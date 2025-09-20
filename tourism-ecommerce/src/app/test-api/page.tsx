@@ -123,7 +123,7 @@ export default function TestApiPage() {
             </ul>
             
             <p className="mt-4">
-              <strong>API Base URL:</strong> http://kilafy-backed.us-east-1.elasticbeanstalk.com
+              <strong>API Base URL:</strong> https://guests-services.munnity.app
             </p>
             
             <p>

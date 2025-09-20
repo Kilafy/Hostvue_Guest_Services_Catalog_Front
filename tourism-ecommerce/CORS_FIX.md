@@ -1,7 +1,7 @@
 # CORS Fix Documentation
 
 ## Problem
-The application was encountering CORS (Cross-Origin Resource Sharing) errors when deployed to Vercel, preventing the frontend from accessing the backend API at `http://kilafy-backed.us-east-1.elasticbeanstalk.com`.
+The application was encountering CORS (Cross-Origin Resource Sharing) errors when deployed to Vercel, preventing the frontend from accessing the backend API at `https://guests-services.munnity.app`.
 
 ## Solution
 Implemented **API Proxy Routes** in Next.js to bypass CORS restrictions by routing API calls through the same domain.
@@ -37,7 +37,7 @@ Modified all pages to use internal API routes:
 ## Usage
 ```typescript
 // Old way (CORS issues in production)
-const response = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services/123');
+const response = await fetch('https://guests-services.munnity.app/api/services/123');
 
 // New way (works everywhere)
 const data = await apiRequest<Service>('/api/services/123');

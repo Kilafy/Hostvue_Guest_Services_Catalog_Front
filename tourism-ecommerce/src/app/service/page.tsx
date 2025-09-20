@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock, Users, Globe, Calendar, MapPin, Tag } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { apiRequest } from '@/lib/api';
 
 interface Service {
@@ -17,6 +18,7 @@ interface Service {
   maxCapacity?: number;
   languageOffered: string[];
   status: string;
+  imageUrl?: string; // Added imageUrl field
   createdAt: number[];
   updatedAt?: number[];
 }
@@ -27,15 +29,6 @@ interface Provider {
   email?: string;
   phone?: string;
   description?: string;
-}
-
-interface Media {
-  id: string;
-  url: string;
-  altText?: string;
-  description?: string;
-  position: number;
-  mimeType?: string;
 }
 
 export default function ServiceDetailsPage() {
@@ -59,7 +52,6 @@ function ServiceDetailsContent() {
   
   const [service, setService] = useState<Service | null>(null);
   const [provider, setProvider] = useState<Provider | null>(null);
-  const [media, setMedia] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProviderDetails = useCallback(async (providerId: string) => {
@@ -85,34 +77,16 @@ function ServiceDetailsContent() {
     } catch (err) {
       console.error('Error fetching service details:', err);
       setService(null);
-    }
-  }, [serviceId, fetchProviderDetails]);
-
-  const fetchServiceMedia = useCallback(async () => {
-    if (!serviceId) return;
-    
-    try {
-      const allMedia = await apiRequest<Media[]>('/api/media');
-      
-      const serviceMedia = allMedia
-        .filter((mediaItem: Media) => mediaItem.url.includes(serviceId))
-        .sort((a: Media, b: Media) => a.position - b.position);
-      
-      setMedia(serviceMedia);
-    } catch (err) {
-      console.error('Error fetching media:', err);
-      setMedia([]);
     } finally {
       setIsLoading(false);
     }
-  }, [serviceId]);
+  }, [serviceId, fetchProviderDetails]);
 
   useEffect(() => {
     if (serviceId) {
       fetchServiceDetails();
-      fetchServiceMedia();
     }
-  }, [serviceId, fetchServiceDetails, fetchServiceMedia]);
+  }, [serviceId, fetchServiceDetails]);
 
   const formatDate = (dateArray: number[]) => {
     if (!dateArray || dateArray.length < 3) return 'N/A';
@@ -127,10 +101,6 @@ function ServiceDetailsContent() {
     if (remainingMinutes === 0) return `${hours} hour${hours > 1 ? 's' : ''}`;
     return `${hours}h ${remainingMinutes}m`;
   };
-
-  // Media processing
-  const mainImage = media.find(m => m.position === 0);
-  const otherImages = media.filter(m => m.position !== 0);
 
   if (isLoading) {
     return (
@@ -226,55 +196,22 @@ function ServiceDetailsContent() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            {media.length > 0 && (
+            {service.imageUrl && (
               <div className="bg-white rounded-3xl shadow-soft p-8 mb-8">
                 <h2 className="font-display font-bold text-2xl text-hostvue-dark mb-6" style={{ color: '#2C2C2C' }}>
-                  Media Gallery
+                  Service Image
                 </h2>
                 
-                {mainImage && (
-                  <div className="mb-8">
-                    <div className="aspect-video rounded-2xl overflow-hidden shadow-lg">
-                      <img
-                        src={mainImage.url}
-                        alt={mainImage.altText || `Main image of ${service.title}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {mainImage.altText && (
-                      <p className="text-sm text-hostvue-gray mt-3" style={{ color: '#6B7280' }}>
-                        {mainImage.altText}
-                      </p>
-                    )}
+                <div className="mb-8">
+                  <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src={service.imageUrl}
+                      alt={`Image of ${service.title}`}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                )}
-
-                {otherImages.length > 0 && (
-                  <div>
-                    <h3 className="font-display font-semibold text-lg text-hostvue-dark mb-4" style={{ color: '#2C2C2C' }}>
-                      Gallery ({otherImages.length})
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {otherImages.slice(0, 6).map((mediaItem, index) => (
-                        <div
-                          key={mediaItem.id}
-                          className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform shadow-md"
-                        >
-                          <img
-                            src={mediaItem.url}
-                            alt={mediaItem.altText || `Gallery image ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {otherImages.length > 6 && (
-                      <p className="text-sm text-hostvue-gray mt-4" style={{ color: '#6B7280' }}>
-                        +{otherImages.length - 6} more images
-                      </p>
-                    )}
-                  </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -373,23 +310,23 @@ function ServiceDetailsContent() {
 
             <div className="bg-white rounded-3xl shadow-soft p-8">
               <h3 className="font-display font-bold text-2xl text-hostvue-dark mb-6" style={{ color: '#2C2C2C' }}>
-                Media Summary
+                Image Summary
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Total Images</span>
-                  <span className="font-bold text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{media.length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Main Image</span>
-                  <span className={`font-bold text-lg ${mainImage ? 'text-green-600' : 'text-red-600'}`}>
-                    {mainImage ? 'Yes' : 'No'}
+                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Service Image</span>
+                  <span className={`font-bold text-lg ${service.imageUrl ? 'text-green-600' : 'text-red-600'}`}>
+                    {service.imageUrl ? 'Yes' : 'No'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Gallery Images</span>
-                  <span className="font-bold text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{otherImages.length}</span>
-                </div>
+                {service.imageUrl && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Image URL</span>
+                    <span className="font-bold text-hostvue-dark text-sm max-w-32 truncate" style={{ color: '#2C2C2C' }}>
+                      {service.imageUrl.split('/').pop()}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

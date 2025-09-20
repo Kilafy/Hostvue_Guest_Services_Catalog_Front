@@ -1,15 +1,15 @@
 // API configuration utility
 export const API_CONFIG = {
-  // Use internal API routes in production (Vercel), direct backend in development
-  BASE_URL: process.env.NODE_ENV === 'production' ? '' : 'http://kilafy-backed.us-east-1.elasticbeanstalk.com',
+  // Use environment variable for API base URL, with fallback
+  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://guests-services.munnity.app/api',
   
-  // API endpoints
+  // API endpoints (relative paths)
   ENDPOINTS: {
-    SERVICES: '/api/services',
-    LOCATIONS: '/api/locations', 
-    CATEGORIES: '/api/categories',
-    PROVIDERS: '/api/providers',
-    MEDIA: '/api/media',
+    SERVICES: '/services',
+    LOCATIONS: '/locations', 
+    CATEGORIES: '/categories',
+    PROVIDERS: '/providers',
+    // Note: Media endpoints have been removed from the backend API
   }
 };
 

@@ -51,7 +51,7 @@ function CategoryDetailsContent() {
     if (!categoryId) return;
     
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories/${categoryId}`);
+      const response = await fetch(`https://guests-services.munnity.app/api/categories/${categoryId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch category details');
       }
@@ -70,7 +70,7 @@ function CategoryDetailsContent() {
 
   const fetchParentCategory = async (parentId: string) => {
     try {
-      const response = await fetch(`http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories/${parentId}`);
+      const response = await fetch(`https://guests-services.munnity.app/api/categories/${parentId}`);
       if (response.ok) {
         const parentData = await response.json();
         setParentCategory(parentData);
@@ -85,7 +85,7 @@ function CategoryDetailsContent() {
     
     try {
       // Fetch all categories to find children
-      const categoriesResponse = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories');
+      const categoriesResponse = await fetch('https://guests-services.munnity.app/api/categories');
       if (categoriesResponse.ok) {
         const allCategories = await categoriesResponse.json();
         const children = allCategories.filter((cat: Category) => cat.parentId === categoryId);
@@ -93,7 +93,7 @@ function CategoryDetailsContent() {
       }
 
       // Fetch all services to find ones in this category
-      const servicesResponse = await fetch('http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services');
+      const servicesResponse = await fetch('https://guests-services.munnity.app/api/services');
       if (servicesResponse.ok) {
         const allServices = await servicesResponse.json();
         // Filter services that have this category in their categoryIds array

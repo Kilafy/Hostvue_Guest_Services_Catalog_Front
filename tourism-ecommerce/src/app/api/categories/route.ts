@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
   try {
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories',
+      'https://guests-services.munnity.app/api/categories',
       {
         method: 'GET',
         headers: {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     const response = await fetch(
-      'http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/categories',
+      'https://guests-services.munnity.app/api/categories',
       {
         method: 'POST',
         headers: {

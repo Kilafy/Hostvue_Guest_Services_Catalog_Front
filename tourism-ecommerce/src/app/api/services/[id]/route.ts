@@ -8,7 +8,7 @@ export async function GET(
     const { id } = await context.params;
     
     const response = await fetch(
-      `http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services/${id}`,
+      `https://guests-services.munnity.app/api/services/${id}`,
       {
         method: 'GET',
         headers: {
@@ -52,7 +52,7 @@ export async function PUT(
     const body = await request.json();
     
     const response = await fetch(
-      `http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services/${id}`,
+      `https://guests-services.munnity.app/api/services/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -98,7 +98,7 @@ export async function DELETE(
     const { id } = await context.params;
     
     const response = await fetch(
-      `http://kilafy-backed.us-east-1.elasticbeanstalk.com/api/services/${id}`,
+      `https://guests-services.munnity.app/api/services/${id}`,
       {
         method: 'DELETE',
         headers: {

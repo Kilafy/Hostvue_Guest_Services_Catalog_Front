@@ -136,9 +136,27 @@ cd tourism-ecommerce
 # Install dependencies
 npm install
 
+# Setup environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
+
 # Run development server
 npm run dev
 ```
+
+### Environment Configuration
+
+1. Copy the environment template:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Configure your API endpoint in `.env.local`:
+   ```env
+   NEXT_PUBLIC_API_BASE_URL=https://guests-services.munnity.app/api
+   ```
+
+3. For detailed environment configuration, see [Environment Documentation](docs/ENVIRONMENT.md)
 
 ### Development Commands
 ```bash
