@@ -4,16 +4,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2, Tags } from 'lucide-react';
 import Link from 'next/link';
-import { ApiCategory } from '@/services/api';
+import { ApiCategory, categoriesApi } from '@/services/api';
 import { EditCategoryModal } from './EditCategoryModal';
-import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
+import { useSuccessHandler } from '@/components/ui/toast';
 
 export default function CategoriesList() {
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<ApiCategory | null>(null);
-  const { handleApiError } = useErrorHandler();
   const { showSuccess } = useSuccessHandler();
 
   useEffect(() => {
@@ -22,11 +21,7 @@ export default function CategoriesList() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-      const data = await response.json();
+      const data = await categoriesApi.getAllCategories();
       setCategories(data);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -42,19 +37,12 @@ export default function CategoriesList() {
     }
 
     try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        await handleApiError(response, 'delete category');
-        return;
-      }
-      
+      await categoriesApi.deleteCategory(id);
       setCategories(categories.filter(category => category.id !== id));
       showSuccess('Category Deleted', 'Category has been successfully deleted.');
-    } catch {
-      handleApiError(new Response(), 'delete category');
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setError('Failed to delete category');
     }
   };
 

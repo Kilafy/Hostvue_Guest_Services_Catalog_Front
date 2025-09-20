@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ModalActions } from '@/components/ui/modal-actions';
-import { ApiCategory } from '@/services/api';
+import { ApiCategory, categoriesApi } from '@/services/api';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
 
 interface EditCategoryModalProps {
@@ -48,23 +48,17 @@ export const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/categories/${category.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      await categoriesApi.updateCategory(category.id, {
+        name: formData.name,
+        slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
+        parentId: formData.parentId || undefined
       });
-
-      if (!response.ok) {
-        await handleApiError(response, 'update category');
-        return;
-      }
 
       showSuccess('Category Updated', 'Category has been successfully updated.');
       onUpdate();
       onClose();
-    } catch {
+    } catch (error) {
+      console.error('Error updating category:', error);
       handleApiError(new Response(), 'update category');
     } finally {
       setIsSubmitting(false);

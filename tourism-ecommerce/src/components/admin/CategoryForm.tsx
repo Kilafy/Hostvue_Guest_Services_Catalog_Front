@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { categoriesApi } from '@/services/api';
 
 interface CategoryFormData {
   name: string;
@@ -34,17 +35,10 @@ export default function CategoryForm() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      await categoriesApi.createCategory({
+        name: formData.name,
+        slug: formData.name.toLowerCase().replace(/\s+/g, '-')
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create category');
-      }
 
       setMessage({ type: 'success', text: 'Category created successfully!' });
       setFormData(initialFormData);
