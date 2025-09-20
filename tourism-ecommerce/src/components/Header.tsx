@@ -48,10 +48,6 @@ export default function Header() {
 
           {/* Search and Actions */}
           <div className="flex items-center space-x-4">
-            {/* Search Button */}
-            <button className="p-2 text-hostvue-gray hover:text-hostvue-primary transition-colors duration-200" style={{ color: '#6B7280' }}>
-              <Search className="h-5 w-5" />
-            </button>
 
             {/* User Account */}
             <button className="p-2 text-hostvue-gray hover:text-hostvue-primary transition-colors duration-200" style={{ color: '#6B7280' }}>
