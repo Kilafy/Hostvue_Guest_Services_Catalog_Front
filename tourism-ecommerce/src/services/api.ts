@@ -13,6 +13,7 @@ export interface ApiService {
   maxCapacity?: number;
   minCapacity?: number;
   status?: string;
+  imageUrl?: string; // Image URL is now included directly in the service
   createdAt: number[]; // [year, month, day, hour, minute, second, nanoseconds]
   updatedAt?: number[];
 }
@@ -33,6 +34,7 @@ export interface ApiLocation {
   lat?: number;
   lon?: number;
   slug?: string;
+  imageUrl?: string; // Image URL is now included directly in the location
   createdAt: number[];
 }
 
@@ -231,49 +233,6 @@ export const locationsApi = {
   // Delete location
   deleteLocation: (id: string): Promise<void> =>
     apiClient.delete(`/locations/${id}`),
-};
-
-// Media API functions
-export const mediaApi = {
-  // Get all media
-  getAllMedia: (): Promise<ApiMedia[]> =>
-    apiClient.get<ApiMedia[]>('/media'),
-
-  // Get media by ID
-  getMediaById: (id: string): Promise<ApiMedia> =>
-    apiClient.get<ApiMedia>(`/media/${id}`),
-
-  // Get media by owner
-  getMediaByOwner: (ownerType: string, ownerId: string): Promise<ApiMedia[]> =>
-    apiClient.get<ApiMedia[]>(`/media/owner/${ownerType}/${ownerId}`),
-
-  // Get media by owner type
-  getMediaByOwnerType: (ownerType: string): Promise<ApiMedia[]> =>
-    apiClient.get<ApiMedia[]>(`/media/owner-type/${ownerType}`),
-
-  // Get media by MIME type
-  getMediaByMimeType: (mimeType: string): Promise<ApiMedia[]> =>
-    apiClient.get<ApiMedia[]>(`/media/mime-type/${mimeType}`),
-
-  // Get media count by owner
-  getMediaCountByOwner: (ownerType: string, ownerId: string): Promise<number> =>
-    apiClient.get<number>(`/media/count/owner/${ownerType}/${ownerId}`),
-
-  // Create new media
-  createMedia: (media: Omit<ApiMedia, 'id' | 'createdAt'>): Promise<ApiMedia> =>
-    apiClient.post<ApiMedia>('/media', media),
-
-  // Update media
-  updateMedia: (id: string, media: Partial<ApiMedia>): Promise<ApiMedia> =>
-    apiClient.put<ApiMedia>(`/media/${id}`, media),
-
-  // Delete media
-  deleteMedia: (id: string): Promise<void> =>
-    apiClient.delete(`/media/${id}`),
-
-  // Delete media by owner
-  deleteMediaByOwner: (ownerType: string, ownerId: string): Promise<void> =>
-    apiClient.delete(`/media/owner/${ownerType}/${ownerId}`),
 };
 
 // Providers API functions

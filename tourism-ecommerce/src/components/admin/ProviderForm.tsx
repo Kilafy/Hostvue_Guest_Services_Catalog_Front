@@ -147,9 +147,9 @@ export default function ProviderForm() {
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select verification status" />
             </SelectTrigger>
-            <SelectContent className="bg-white shadow-lg border">
-              <SelectItem value="false" className="cursor-pointer hover:bg-gray-50">Not Verified</SelectItem>
-              <SelectItem value="true" className="cursor-pointer hover:bg-gray-50">Verified</SelectItem>
+            <SelectContent>
+              <SelectItem value="false">Not Verified</SelectItem>
+              <SelectItem value="true">Verified</SelectItem>
             </SelectContent>
           </Select>
         </div>

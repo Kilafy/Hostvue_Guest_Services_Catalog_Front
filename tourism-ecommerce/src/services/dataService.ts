@@ -3,12 +3,10 @@ import {
   servicesApi, 
   categoriesApi, 
   locationsApi, 
-  mediaApi,
   providersApi,
   ApiService,
   ApiCategory,
   ApiLocation,
-  ApiMedia,
   ApiProvider,
   formatDuration
 } from './api';
@@ -63,7 +61,7 @@ const mapApiLocationToCity = (apiLocation: ApiLocation): City => ({
   region: apiLocation.region,
   latitude: apiLocation.lat || 0,
   longitude: apiLocation.lon || 0,
-  imageUrl: DEFAULT_IMAGES.tour, // Default city image
+  imageUrl: apiLocation.imageUrl || DEFAULT_IMAGES.tour, // Use location's imageUrl or default
   serviceCount: 0, // Will be populated when counting services
   description: `Discover ${apiLocation.city} in ${apiLocation.country}`,
   popularServices: [] // Will be populated when getting services
@@ -75,17 +73,12 @@ const getDefaultImageForService = (): string => {
   return DEFAULT_IMAGES.tour;
 };
 
-const mapApiServiceToTourismService = async (
-  apiService: ApiService,
-  allMedia: ApiMedia[]
-): Promise<TourismService> => {
-  // Get media for the service
-  const serviceMedia = allMedia.filter((media: ApiMedia) => 
-    media.ownerType === 'service' && media.ownerId === apiService.id
-  );
-  
-  const imageUrl = serviceMedia.length > 0 ? serviceMedia[0].url : getDefaultImageForService();
-  const imageGallery = serviceMedia.map((media: ApiMedia) => media.url);
+const mapApiServiceToTourismService = (
+  apiService: ApiService
+): TourismService => {
+  // Use the imageUrl from the service directly, or fallback to default
+  const imageUrl = apiService.imageUrl || getDefaultImageForService();
+  const imageGallery = apiService.imageUrl ? [apiService.imageUrl] : [];
 
   // Create a mock category if we can't find one
   const category: ServiceCategory = {
@@ -219,15 +212,10 @@ class DataService {
 
   async getAllServices(): Promise<TourismService[]> {
     try {
-      const [apiServices, allMedia] = await Promise.all([
-        servicesApi.getAllServices(),
-        mediaApi.getAllMedia()
-      ]);
+      const apiServices = await servicesApi.getAllServices();
 
-      const services = await Promise.all(
-        apiServices.map(service => 
-          mapApiServiceToTourismService(service, allMedia)
-        )
+      const services = apiServices.map(service => 
+        mapApiServiceToTourismService(service)
       );
 
       return services;
@@ -239,15 +227,10 @@ class DataService {
 
   async getServicesByProvider(providerId: string): Promise<TourismService[]> {
     try {
-      const [apiServices, allMedia] = await Promise.all([
-        servicesApi.getServicesByProvider(providerId),
-        mediaApi.getAllMedia()
-      ]);
+      const apiServices = await servicesApi.getServicesByProvider(providerId);
 
-      return Promise.all(
-        apiServices.map(service => 
-          mapApiServiceToTourismService(service, allMedia)
-        )
+      return apiServices.map(service => 
+        mapApiServiceToTourismService(service)
       );
     } catch (error) {
       console.error('Failed to fetch services by provider:', error);
@@ -257,15 +240,10 @@ class DataService {
 
   async searchServices(query: string): Promise<TourismService[]> {
     try {
-      const [apiServices, allMedia] = await Promise.all([
-        servicesApi.searchServices(query),
-        mediaApi.getAllMedia()
-      ]);
+      const apiServices = await servicesApi.searchServices(query);
 
-      return Promise.all(
-        apiServices.map(service => 
-          mapApiServiceToTourismService(service, allMedia)
-        )
+      return apiServices.map(service => 
+        mapApiServiceToTourismService(service)
       );
     } catch (error) {
       console.error('Failed to search services:', error);

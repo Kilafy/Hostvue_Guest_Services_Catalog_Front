@@ -103,17 +103,6 @@ export default function ServiceForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Helper function to truncate text for better display
-  const truncateText = (text: string, maxLength: number = 50): string => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
-  // Get display name for provider
-  const getProviderDisplayName = (provider: ApiProvider): string => {
-    return provider.companyName || provider.legalName || 'Unknown Provider';
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {message && (
@@ -178,7 +167,7 @@ export default function ServiceForm() {
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
-            <SelectContent className="bg-white shadow-lg border">
+            <SelectContent>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
               <SelectItem value="draft">Draft</SelectItem>
@@ -219,28 +208,12 @@ export default function ServiceForm() {
           <SelectTrigger>
             <SelectValue placeholder="Select provider" />
           </SelectTrigger>
-          <SelectContent className="bg-white shadow-lg border">
-            {providers.map((provider) => {
-              const displayName = getProviderDisplayName(provider);
-              const truncatedName = truncateText(displayName, 50);
-              
-              return (
-                <SelectItem 
-                  key={provider.id} 
-                  value={provider.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                >
-                  <span title={displayName} className="block">
-                    {truncatedName}
-                  </span>
-                </SelectItem>
-              );
-            })}
-            {providers.length === 0 && (
-              <div className="px-2 py-1.5 text-sm text-gray-500">
-                No providers available
-              </div>
-            )}
+          <SelectContent>
+            {providers.map((provider) => (
+              <SelectItem key={provider.id} value={provider.id}>
+                {provider.companyName || provider.legalName || 'Unknown Provider'}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
