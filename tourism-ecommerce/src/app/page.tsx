@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServiceCard from "@/components/ServiceCard";
 import { useHomepageData } from "@/hooks/useData";
+import { ServiceCardSkeleton, CategoryCardSkeleton, DestinationCardSkeleton } from "@/components/ui/skeleton";
 
 export default function HomePage() {
   const { data: homepageData, loading, error } = useHomepageData();
@@ -17,18 +18,6 @@ export default function HomePage() {
     { icon: CheckCircle, text: "Instant Confirmation" },
     { icon: CheckCircle, text: "Free Cancellation" },
   ];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-hostvue-gray">Loading...</div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -64,9 +53,17 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredServices.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
+            {loading ? (
+              // Show skeleton cards while loading
+              Array.from({ length: 6 }).map((_, index) => (
+                <ServiceCardSkeleton key={index} />
+              ))
+            ) : (
+              // Show actual service cards when loaded
+              featuredServices.map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))
+            )}
           </div>
 
           <div className="text-center mt-8 md:hidden">
@@ -208,26 +205,34 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/category?id=${category.id}`}
-                className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-hostvue-primary transition-all duration-200 hover:shadow-card"
-              >
-                <div
-                  className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-200"
-                  style={{ backgroundColor: `${category.color}15` }}
+            {loading ? (
+              // Show skeleton cards while loading
+              Array.from({ length: 6 }).map((_, index) => (
+                <CategoryCardSkeleton key={index} />
+              ))
+            ) : (
+              // Show actual category cards when loaded
+              categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/category?id=${category.id}`}
+                  className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-hostvue-primary transition-all duration-200 hover:shadow-card"
                 >
-                  {category.icon}
-                </div>
-                <h3 className="font-semibold text-hostvue-dark group-hover:text-hostvue-primary transition-colors" style={{ color: '#2C2C2C' }}>
-                  {category.name}
-                </h3>
-                <p className="text-sm text-hostvue-gray mt-1" style={{ color: '#6B7280' }}>
-                  {category.description}
-                </p>
-              </Link>
-            ))}
+                  <div
+                    className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-200"
+                    style={{ backgroundColor: `${category.color}15` }}
+                  >
+                    {category.icon}
+                  </div>
+                  <h3 className="font-semibold text-hostvue-dark group-hover:text-hostvue-primary transition-colors" style={{ color: '#2C2C2C' }}>
+                    {category.name}
+                  </h3>
+                  <p className="text-sm text-hostvue-gray mt-1" style={{ color: '#6B7280' }}>
+                    {category.description}
+                  </p>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -246,30 +251,38 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {popularDestinations.map((destination) => (
-              <Link
-                key={destination.id}
-                href={`/location?id=${destination.id}`}
-                className="group relative h-64 rounded-2xl overflow-hidden shadow-card hover:shadow-lg transition-all duration-300"
-              >
-                <Image
-                  src={destination.imageUrl}
-                  alt={destination.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="font-bold text-xl mb-1">{destination.name}</h3>
-                  <p className="text-sm opacity-90 mb-2">
-                    {destination.country}
-                  </p>
-                  <div className="text-sm">
-                    {destination.serviceCount} experiences
+            {loading ? (
+              // Show skeleton cards while loading
+              Array.from({ length: 4 }).map((_, index) => (
+                <DestinationCardSkeleton key={index} />
+              ))
+            ) : (
+              // Show actual destination cards when loaded
+              popularDestinations.map((destination) => (
+                <Link
+                  key={destination.id}
+                  href={`/location?id=${destination.id}`}
+                  className="group relative h-64 rounded-2xl overflow-hidden shadow-card hover:shadow-lg transition-all duration-300"
+                >
+                  <Image
+                    src={destination.imageUrl}
+                    alt={destination.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="font-bold text-xl mb-1">{destination.name}</h3>
+                    <p className="text-sm opacity-90 mb-2">
+                      {destination.country}
+                    </p>
+                    <div className="text-sm">
+                      {destination.serviceCount} experiences
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>
