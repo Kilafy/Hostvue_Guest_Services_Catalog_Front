@@ -4,9 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2, MapPin } from 'lucide-react';
 import Link from 'next/link';
-import { ApiLocation } from '@/services/api';
+import { locationsApi, ApiLocation } from '@/services/api';
 import { EditLocationModal } from './EditLocationModal';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
+import { ServiceListItemSkeleton } from '@/components/ui/skeleton';
 
 export default function LocationsList() {
   const [locations, setLocations] = useState<ApiLocation[]>([]);
@@ -22,11 +23,7 @@ export default function LocationsList() {
 
   const fetchLocations = async () => {
     try {
-      const response = await fetch('/api/locations');
-      if (!response.ok) {
-        throw new Error('Failed to fetch locations');
-      }
-      const data = await response.json();
+      const data = await locationsApi.getAllLocations();
       setLocations(data);
     } catch (err) {
       console.error('Error fetching locations:', err);
@@ -42,18 +39,11 @@ export default function LocationsList() {
     }
 
     try {
-      const response = await fetch(`/api/locations/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        await handleApiError(response, 'delete location');
-        return;
-      }
-      
+      await locationsApi.deleteLocation(id);
       setLocations(locations.filter(location => location.id !== id));
       showSuccess('Location Deleted', 'Location has been successfully deleted.');
-    } catch {
+    } catch (error) {
+      console.error('Error deleting location:', error);
       handleApiError(new Response(), 'delete location');
     }
   };
@@ -72,10 +62,11 @@ export default function LocationsList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-          <p className="text-gray-500">Loading locations...</p>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <ServiceListItemSkeleton key={index} />
+          ))}
         </div>
       </div>
     );

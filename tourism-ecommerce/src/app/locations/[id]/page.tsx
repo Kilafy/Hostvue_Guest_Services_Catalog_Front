@@ -1,6 +1,6 @@
 'use client';
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, MapPin, Calendar, Image, Globe } from 'lucide-react';
 import Link from 'next/link';
@@ -29,23 +29,8 @@ interface Media {
 }
 
 export default function LocationDetailsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 mx-auto mb-4" style={{ borderColor: '#D87441' }}></div>
-          <p className="text-hostvue-gray text-lg" style={{ color: '#6B7280' }}>Loading location details...</p>
-        </div>
-      </div>
-    }>
-      <LocationDetailsContent />
-    </Suspense>
-  );
-}
-
-function LocationDetailsContent() {
-  const searchParams = useSearchParams();
-  const locationId = searchParams.get('id');
+  const params = useParams();
+  const locationId = params.id as string;
   
   const [location, setLocation] = useState<Location | null>(null);
   const [media, setMedia] = useState<Media[]>([]);
@@ -126,14 +111,14 @@ function LocationDetailsContent() {
           <div className="text-center">
             <div className="bg-red-50 border border-red-200 rounded-3xl p-8 max-w-md mx-auto">
               <p className="text-red-600 mb-6 text-lg">{error || 'Location not found'}</p>
-              <Link href="/">
+              <Link href="/locations">
                 <Button 
                   variant="outline"
                   className="border-hostvue-primary text-hostvue-primary hover:bg-hostvue-primary hover:text-white transition-colors"
                   style={{ borderColor: '#D87441', color: '#D87441' }}
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                  Back to Destinations
                 </Button>
               </Link>
             </div>
@@ -151,14 +136,14 @@ function LocationDetailsContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/">
+          <Link href="/locations">
             <Button 
               variant="outline" 
               className="mb-6 border-hostvue-primary text-hostvue-primary hover:bg-hostvue-primary hover:text-white transition-colors"
               style={{ borderColor: '#D87441', color: '#D87441' }}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              Back to Destinations
             </Button>
           </Link>
           

@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { locationsApi } from '@/services/api';
 
 interface LocationFormData {
-  name: string;
   city: string;
   region: string;
   country: string;
   lat: string;
   lon: string;
+  slug: string;
 }
 
 export default function LocationForm() {
@@ -18,12 +19,12 @@ export default function LocationForm() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const initialFormData: LocationFormData = {
-    name: '',
     city: '',
     region: '',
     country: 'Colombia',
     lat: '',
-    lon: ''
+    lon: '',
+    slug: ''
   };
 
   const [formData, setFormData] = useState<LocationFormData>(initialFormData);
@@ -41,27 +42,23 @@ export default function LocationForm() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/locations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          city: formData.city,
-          region: formData.region,
-          country: formData.country,
-          lat: parseFloat(formData.lat) || undefined,
-          lon: parseFloat(formData.lon) || undefined,
-        }),
-      });
+      const locationData = {
+        city: formData.city,
+        region: formData.region,
+        country: formData.country,
+        lat: parseFloat(formData.lat) || undefined,
+        lon: parseFloat(formData.lon) || undefined,
+        slug: formData.slug || undefined,
+      };
 
-      if (!response.ok) {
-        throw new Error('Failed to create location');
-      }
+      await locationsApi.createLocation(locationData);
 
-      setMessage({ type: 'success', text: 'Location created successfully!' });
-      setFormData(initialFormData);
+      setMessage({ type: 'success', text: 'Location created successfully! Reloading page...' });
+      
+      // Wait a moment to show the success message, then reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Error submitting location:', error);
       setMessage({ type: 'error', text: 'Failed to create location. Please try again.' });
@@ -83,19 +80,6 @@ export default function LocationForm() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="name" className="text-sm font-medium text-gray-700">Location Name</Label>
-          <Input
-            id="name"
-            type="text"
-            value={formData.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
-            required
-            className="mt-1"
-            placeholder="Enter location name"
-          />
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="city" className="text-sm font-medium text-gray-700">City</Label>
@@ -134,6 +118,18 @@ export default function LocationForm() {
             required
             className="mt-1"
             placeholder="Enter country"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="slug" className="text-sm font-medium text-gray-700">Slug (optional)</Label>
+          <Input
+            id="slug"
+            type="text"
+            value={formData.slug}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('slug', e.target.value)}
+            className="mt-1"
+            placeholder="location-slug"
           />
         </div>
 
