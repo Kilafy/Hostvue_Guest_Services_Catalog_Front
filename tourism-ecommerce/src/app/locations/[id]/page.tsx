@@ -2,20 +2,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Calendar, Image, Globe } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Globe } from 'lucide-react';
 import Link from 'next/link';
-
-interface Location {
-  id: string;
-  name: string;
-  city: string;
-  region: string;
-  country: string;
-  lat?: number;
-  lon?: number;
-  slug?: string;
-  createdAt: number[];
-}
+import { locationsApi, ApiLocation } from '@/services/api';
 
 interface Media {
   id: string;
@@ -32,20 +21,24 @@ export default function LocationDetailsPage() {
   const params = useParams();
   const locationId = params.id as string;
   
-  const [location, setLocation] = useState<Location | null>(null);
+  const [location, setLocation] = useState<ApiLocation | null>(null);
   const [media, setMedia] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLocationDetails = useCallback(async () => {
-    if (!locationId) return;
+    if (!locationId) {
+      console.error('No location ID provided');
+      setError('No location ID provided');
+      setIsLoading(false);
+      return;
+    }
+    
+    console.log('Fetching location details for ID:', locationId);
     
     try {
-      const response = await fetch(`https://guests-services.munnity.app/api/locations/${locationId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch location details');
-      }
-      const data = await response.json();
+      const data = await locationsApi.getLocationById(locationId);
+      console.log('Location data received:', data);
       setLocation(data);
     } catch (err) {
       console.error('Error fetching location:', err);
@@ -56,18 +49,22 @@ export default function LocationDetailsPage() {
   const fetchLocationMedia = useCallback(async () => {
     if (!locationId) return;
     
+    console.log('Fetching media for location ID:', locationId);
+    
     try {
       const response = await fetch('https://guests-services.munnity.app/api/media');
       if (!response.ok) {
         throw new Error('Failed to fetch media');
       }
       const allMedia = await response.json();
+      console.log('All media received:', allMedia);
       
       // Filter media for this location and sort by position
       const locationMedia = allMedia
         .filter((item: Media) => item.ownerType === 'location' && item.ownerId === locationId)
         .sort((a: Media, b: Media) => a.position - b.position);
       
+      console.log('Filtered location media:', locationMedia);
       setMedia(locationMedia);
     } catch (err) {
       console.error('Error fetching media:', err);
@@ -128,7 +125,15 @@ export default function LocationDetailsPage() {
     );
   }
 
-  const mainImage = media.find(m => m.position === 0);
+  // Get the main image - either from location.imageUrl or media
+  const getMainImage = () => {
+    if (location?.imageUrl) {
+      return { url: location.imageUrl, altText: `Main image of ${location.city}` };
+    }
+    return media.find(m => m.position === 0);
+  };
+
+  const mainImage = getMainImage();
   const otherImages = media.filter(m => m.position !== 0);
 
   return (
@@ -150,7 +155,7 @@ export default function LocationDetailsPage() {
           <div className="flex items-start justify-between">
             <div>
               <h1 className="font-display font-bold text-4xl md:text-5xl text-hostvue-dark mb-4" style={{ color: '#2C2C2C' }}>
-                {location.name}
+                {location.city}
               </h1>
               <div className="flex items-center text-hostvue-gray text-lg mb-4" style={{ color: '#6B7280' }}>
                 <MapPin className="h-6 w-6 mr-2 text-hostvue-primary" style={{ color: '#D87441' }} />
@@ -176,7 +181,7 @@ export default function LocationDetailsPage() {
                 <div className="aspect-video w-full">
                   <img
                     src={mainImage.url}
-                    alt={mainImage.altText || `Main image of ${location.name}`}
+                    alt={mainImage.altText || `Main image of ${location.city}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -303,8 +308,8 @@ export default function LocationDetailsPage() {
               <h3 className="font-display font-bold text-2xl text-hostvue-dark mb-6" style={{ color: '#2C2C2C' }}>Location Details</h3>
               <div className="space-y-6">
                 <div>
-                  <label className="text-sm font-medium text-hostvue-gray" style={{ color: '#6B7280' }}>Name</label>
-                  <p className="text-hostvue-dark font-medium text-lg" style={{ color: '#2C2C2C' }}>{location.name}</p>
+                  <label className="text-sm font-medium text-hostvue-gray" style={{ color: '#6B7280' }}>City</label>
+                  <p className="text-hostvue-dark font-medium text-lg" style={{ color: '#2C2C2C' }}>{location.city}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-hostvue-gray" style={{ color: '#6B7280' }}>City</label>
@@ -342,29 +347,6 @@ export default function LocationDetailsPage() {
                     <p className="text-hostvue-dark font-mono text-sm bg-hostvue-light px-3 py-2 rounded-lg" style={{ color: '#2C2C2C', backgroundColor: '#F7F7F7' }}>{location.slug}</p>
                   </div>
                 )}
-                <div>
-                  <label className="text-sm font-medium text-hostvue-gray" style={{ color: '#6B7280' }}>Location ID</label>
-                  <p className="text-hostvue-gray font-mono text-xs break-all bg-hostvue-light px-3 py-2 rounded-lg" style={{ color: '#6B7280', backgroundColor: '#F7F7F7' }}>{location.id}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Media Summary */}
-            <div className="bg-white rounded-3xl p-8 shadow-soft">
-              <h3 className="font-display font-bold text-2xl text-hostvue-dark mb-6" style={{ color: '#2C2C2C' }}>Media Summary</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-hostvue-light rounded-xl" style={{ backgroundColor: '#F7F7F7' }}>
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Total Images</span>
-                  <span className="font-bold text-xl text-hostvue-primary" style={{ color: '#D87441' }}>{media.length}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-hostvue-light rounded-xl" style={{ backgroundColor: '#F7F7F7' }}>
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Main Image</span>
-                  <span className={`font-bold text-xl ${mainImage ? 'text-green-600' : 'text-red-500'}`}>{mainImage ? 'Yes' : 'No'}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-hostvue-light rounded-xl" style={{ backgroundColor: '#F7F7F7' }}>
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Gallery Images</span>
-                  <span className="font-bold text-xl text-hostvue-primary" style={{ color: '#D87441' }}>{otherImages.length}</span>
-                </div>
               </div>
             </div>
           </div>

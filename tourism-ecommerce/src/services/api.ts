@@ -297,6 +297,48 @@ export const locationsApi = {
   createLocation: (location: Omit<ApiLocation, 'id' | 'createdAt'>): Promise<ApiLocation> =>
     apiClient.post<ApiLocation>('/locations', location),
 
+  // Create location with image (multipart form data)
+  createLocationWithImage: async (locationData: {
+    city: string;
+    region?: string;
+    country: string;
+    lat?: number;
+    lon?: number;
+    slug?: string;
+  }, imageFile?: File): Promise<ApiLocation> => {
+    const formData = new FormData();
+    
+    // Add location data as JSON
+    const locationJson = {
+      city: locationData.city,
+      region: locationData.region || '',
+      country: locationData.country,
+      lat: locationData.lat,
+      lon: locationData.lon,
+      slug: locationData.slug || ''
+    };
+    
+    formData.append('location', new Blob([JSON.stringify(locationJson)], { 
+      type: 'application/json' 
+    }));
+    
+    // Add image file if provided
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/locations/with-image`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  },
+
   // Update location
   updateLocation: (id: string, location: Partial<ApiLocation>): Promise<ApiLocation> =>
     apiClient.put<ApiLocation>(`/locations/${id}`, location),
@@ -339,6 +381,33 @@ export const providersApi = {
   // Delete provider
   deleteProvider: (id: string): Promise<void> =>
     apiClient.delete(`/providers/${id}`),
+};
+
+// Media API functions
+export const mediaApi = {
+  // Get all media
+  getAllMedia: (): Promise<ApiMedia[]> =>
+    apiClient.get<ApiMedia[]>('/media'),
+
+  // Get media by ID
+  getMediaById: (id: string): Promise<ApiMedia> =>
+    apiClient.get<ApiMedia>(`/media/${id}`),
+
+  // Get media by owner
+  getMediaByOwner: (ownerType: string, ownerId: string): Promise<ApiMedia[]> =>
+    apiClient.get<ApiMedia[]>(`/media/owner?ownerType=${ownerType}&ownerId=${ownerId}`),
+
+  // Create new media
+  createMedia: (media: Omit<ApiMedia, 'id' | 'createdAt'>): Promise<ApiMedia> =>
+    apiClient.post<ApiMedia>('/media', media),
+
+  // Update media
+  updateMedia: (id: string, media: Partial<ApiMedia>): Promise<ApiMedia> =>
+    apiClient.put<ApiMedia>(`/media/${id}`, media),
+
+  // Delete media
+  deleteMedia: (id: string): Promise<void> =>
+    apiClient.delete(`/media/${id}`),
 };
 
 // Helper function to parse API date arrays to Date objects
