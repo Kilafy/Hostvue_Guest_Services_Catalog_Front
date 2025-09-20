@@ -5,31 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock, Users, Globe, Calendar, MapPin, Tag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { apiRequest } from '@/lib/api';
-
-interface Service {
-  id: string;
-  providerId: string;
-  title: string;
-  shortDescription?: string;
-  longDescription?: string;
-  durationMinutes: number;
-  minCapacity?: number;
-  maxCapacity?: number;
-  languageOffered: string[];
-  status: string;
-  imageUrl?: string; // Added imageUrl field
-  createdAt: number[];
-  updatedAt?: number[];
-}
-
-interface Provider {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  description?: string;
-}
+import { servicesApi, providersApi, ApiService, ApiProvider } from '@/services/api';
 
 export default function ServiceDetailsPage() {
   return (
@@ -50,13 +26,13 @@ function ServiceDetailsContent() {
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('id');
   
-  const [service, setService] = useState<Service | null>(null);
-  const [provider, setProvider] = useState<Provider | null>(null);
+  const [service, setService] = useState<ApiService | null>(null);
+  const [provider, setProvider] = useState<ApiProvider | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProviderDetails = useCallback(async (providerId: string) => {
     try {
-      const data = await apiRequest<Provider>(`/api/providers/${providerId}`);
+      const data = await providersApi.getProviderById(providerId);
       setProvider(data);
     } catch (err) {
       console.error('Error fetching provider details:', err);
@@ -68,7 +44,7 @@ function ServiceDetailsContent() {
     if (!serviceId) return;
     
     try {
-      const data = await apiRequest<Service>(`/api/services/${serviceId}`);
+      const data = await servicesApi.getServiceById(serviceId);
       setService(data);
       
       if (data.providerId) {
@@ -173,7 +149,7 @@ function ServiceDetailsContent() {
                 {provider && (
                   <span className="flex items-center text-hostvue-gray" style={{ color: '#6B7280' }}>
                     <MapPin className="h-4 w-4 mr-1 text-hostvue-primary" style={{ color: '#D87441' }} />
-                    Provider: {provider.name}
+                    Provider: {provider.companyName || provider.legalName || 'Unknown Provider'}
                   </span>
                 )}
               </div>
@@ -241,7 +217,7 @@ function ServiceDetailsContent() {
                   </label>
                   <p className="text-hostvue-dark flex items-center text-lg" style={{ color: '#2C2C2C' }}>
                     <Clock className="h-5 w-5 mr-2 text-hostvue-primary" style={{ color: '#D87441' }} />
-                    {formatDuration(service.durationMinutes)}
+                    {formatDuration(service.durationMinutes || 0)}
                   </p>
                 </div>
                 
@@ -286,49 +262,21 @@ function ServiceDetailsContent() {
                     <label className="text-sm font-semibold text-hostvue-gray uppercase tracking-wide mb-2 block" style={{ color: '#6B7280' }}>
                       Name
                     </label>
-                    <p className="text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{provider.name}</p>
+                    <p className="text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>
+                      {provider.companyName || provider.legalName || 'Unknown Provider'}
+                    </p>
                   </div>
-                  {provider.email && (
+                  {provider.description && (
                     <div>
                       <label className="text-sm font-semibold text-hostvue-gray uppercase tracking-wide mb-2 block" style={{ color: '#6B7280' }}>
-                        Email
+                        Description
                       </label>
-                      <p className="text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{provider.email}</p>
-                    </div>
-                  )}
-                  {provider.phone && (
-                    <div>
-                      <label className="text-sm font-semibold text-hostvue-gray uppercase tracking-wide mb-2 block" style={{ color: '#6B7280' }}>
-                        Phone
-                      </label>
-                      <p className="text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{provider.phone}</p>
+                      <p className="text-hostvue-dark text-lg" style={{ color: '#2C2C2C' }}>{provider.description}</p>
                     </div>
                   )}
                 </div>
               </div>
             )}
-
-            <div className="bg-white rounded-3xl shadow-soft p-8">
-              <h3 className="font-display font-bold text-2xl text-hostvue-dark mb-6" style={{ color: '#2C2C2C' }}>
-                Image Summary
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Service Image</span>
-                  <span className={`font-bold text-lg ${service.imageUrl ? 'text-green-600' : 'text-red-600'}`}>
-                    {service.imageUrl ? 'Yes' : 'No'}
-                  </span>
-                </div>
-                {service.imageUrl && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-hostvue-gray font-medium" style={{ color: '#6B7280' }}>Image URL</span>
-                    <span className="font-bold text-hostvue-dark text-sm max-w-32 truncate" style={{ color: '#2C2C2C' }}>
-                      {service.imageUrl.split('/').pop()}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </div>
