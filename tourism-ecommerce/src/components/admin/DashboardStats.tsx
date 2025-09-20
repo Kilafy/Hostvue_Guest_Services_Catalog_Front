@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { servicesApi, categoriesApi, locationsApi } from '@/services/api';
 
 interface DashboardStats {
   totalServices: number;
@@ -24,20 +25,14 @@ export default function DashboardStats() {
 
   const fetchStats = async () => {
     try {
-      // Fetch all data in parallel
-      const [servicesRes, locationsRes, categoriesRes] = await Promise.all([
-        fetch('/api/services'),
-        fetch('/api/locations'),
-        fetch('/api/categories')
-      ]);
-
+      // Fetch all data in parallel using the API functions
       const [services, locations, categories] = await Promise.all([
-        servicesRes.json(),
-        locationsRes.json(),
-        categoriesRes.json()
+        servicesApi.getAllServices(),
+        locationsApi.getAllLocations(),
+        categoriesApi.getAllCategories()
       ]);
 
-      const activeServices = services.filter((service: { status: string }) => service.status === 'active').length;
+      const activeServices = services.filter((service) => service.status === 'active').length;
 
       setStats({
         totalServices: services.length,
