@@ -156,7 +156,78 @@ export const servicesApi = {
   searchServices: (title: string): Promise<ApiService[]> =>
     apiClient.get<ApiService[]>(`/services/search?title=${encodeURIComponent(title)}`),
 
-  // Create new service
+  // Create new service with image upload (multipart form data)
+  createServiceWithImage: async (serviceData: {
+    title: string;
+    shortDescription?: string;
+    longDescription?: string;
+    durationMinutes?: number;
+    languageOffered?: string[];
+    maxCapacity?: number;
+    minCapacity?: number;
+    status?: string;
+    providerId: string;
+  }, imageFile?: File): Promise<ApiService> => {
+    const formData = new FormData();
+    
+    // Add service data as JSON
+    const serviceJson = {
+      title: serviceData.title,
+      shortDescription: serviceData.shortDescription || '',
+      longDescription: serviceData.longDescription || '',
+      durationMinutes: serviceData.durationMinutes || 60,
+      languageOffered: serviceData.languageOffered || ['English'],
+      maxCapacity: serviceData.maxCapacity || 10,
+      minCapacity: serviceData.minCapacity || 1,
+      status: serviceData.status || 'active',
+      providerId: serviceData.providerId
+    };
+    
+    formData.append('service', new Blob([JSON.stringify(serviceJson)], { 
+      type: 'application/json' 
+    }));
+    
+    // Add image file if provided
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+    
+    const url = `${API_BASE_URL}/services/with-image`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header - let browser set it with boundary for multipart
+      });
+
+      if (!response.ok) {
+        let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage += ` - ${errorData.message}`;
+          }
+        } catch {
+          // If we can't parse error response, use the status text
+        }
+        
+        console.warn(`API request failed for ${url}:`, errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.warn(`API request failed for ${url}:`, error.message);
+      } else {
+        console.warn(`API request failed for ${url}:`, error);
+      }
+      throw error;
+    }
+  },
+
+  // Create new service (legacy method without image)
   createService: (service: Omit<ApiService, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiService> =>
     apiClient.post<ApiService>('/services', service),
 

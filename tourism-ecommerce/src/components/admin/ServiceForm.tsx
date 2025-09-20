@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { servicesApi, providersApi } from '@/services/api';
+import Image from 'next/image';
 
 interface ApiProvider {
   id: string;
@@ -30,6 +33,9 @@ export default function ServiceForm() {
     languageOffered: ''
   });
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [providers, setProviders] = useState<ApiProvider[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -40,14 +46,32 @@ export default function ServiceForm() {
 
   const loadProviders = async () => {
     try {
-      const response = await fetch('/api/providers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch providers');
-      }
-      const providersData = await response.json();
+      const providersData = await providersApi.getAllProviders();
       setProviders(providersData);
     } catch (error) {
       console.error('Failed to load providers:', error);
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -58,39 +82,24 @@ export default function ServiceForm() {
 
     try {
       const serviceData = {
-        ...formData,
+        title: formData.title,
+        shortDescription: formData.shortDescription,
+        longDescription: formData.longDescription,
         durationMinutes: formData.durationMinutes ? parseInt(formData.durationMinutes) : undefined,
         maxCapacity: formData.maxCapacity ? parseInt(formData.maxCapacity) : undefined,
         minCapacity: formData.minCapacity ? parseInt(formData.minCapacity) : undefined,
+        status: formData.status,
+        providerId: formData.providerId,
         languageOffered: formData.languageOffered.split(',').map(lang => lang.trim()).filter(Boolean)
       };
 
-      const response = await fetch('/api/services', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(serviceData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create service');
-      }
+      await servicesApi.createServiceWithImage(serviceData, selectedImage || undefined);
       
-      setMessage({ type: 'success', text: 'Service created successfully!' });
+      setMessage({ type: 'success', text: 'Service created successfully! Reloading page...' });
       
-      // Reset form
-      setFormData({
-        title: '',
-        shortDescription: '',
-        longDescription: '',
-        durationMinutes: '',
-        maxCapacity: '',
-        minCapacity: '',
-        status: 'active',
-        providerId: '',
-        languageOffered: ''
-      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error('Error submitting service:', error);
       setMessage({ type: 'error', text: 'Failed to create service. Please try again.' });
@@ -124,6 +133,48 @@ export default function ServiceForm() {
           placeholder="Enter service title"
           required
         />
+      </div>
+
+      {/* Image Upload Section */}
+      <div>
+        <Label htmlFor="image">Service Image</Label>
+        <div className="mt-2">
+          {imagePreview ? (
+            <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200">
+              <Image
+                src={imagePreview}
+                alt="Service preview"
+                fill
+                className="object-cover"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
+            >
+              <Upload className="h-8 w-8 text-gray-400 mb-2" />
+              <p className="text-sm text-gray-500 text-center">
+                Click to upload service image<br />
+                <span className="text-xs text-gray-400">PNG, JPG up to 10MB</span>
+              </p>
+            </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+        </div>
       </div>
 
       <div>
