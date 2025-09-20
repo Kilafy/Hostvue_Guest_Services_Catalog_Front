@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ModalActions } from '@/components/ui/modal-actions';
-import { ApiProvider } from '@/services/api';
-import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
+import { ApiProvider, providersApi } from '@/services/api';
+import { useSuccessHandler } from '@/components/ui/toast';
 
 interface EditProviderModalProps {
   provider: ApiProvider;
@@ -28,7 +28,6 @@ export const EditProviderModal: React.FC<EditProviderModalProps> = ({
     verified: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { handleApiError } = useErrorHandler();
   const { showSuccess } = useSuccessHandler();
 
   useEffect(() => {
@@ -48,31 +47,27 @@ export const EditProviderModal: React.FC<EditProviderModalProps> = ({
     e.preventDefault();
     
     if (!formData.userId.trim()) {
-      handleApiError(new Response(), 'save provider: User ID is required');
+      console.error('User ID is required');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/providers/${provider.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      await providersApi.updateProvider(provider.id, {
+        userId: formData.userId,
+        companyName: formData.companyName,
+        legalName: formData.legalName,
+        vatNumber: formData.vatNumber,
+        description: formData.description,
+        verified: formData.verified
       });
-
-      if (!response.ok) {
-        await handleApiError(response, 'update provider');
-        return;
-      }
 
       showSuccess('Provider Updated', 'Provider has been successfully updated.');
       onUpdate();
       onClose();
-    } catch {
-      handleApiError(new Response(), 'update provider');
+    } catch (error) {
+      console.error('Error updating provider:', error);
     } finally {
       setIsSubmitting(false);
     }

@@ -3,16 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2, Shield, ShieldCheck, Building2 } from 'lucide-react';
-import { ApiProvider } from '@/services/api';
+import { ApiProvider, providersApi } from '@/services/api';
 import { EditProviderModal } from './EditProviderModal';
-import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
+import { useSuccessHandler } from '@/components/ui/toast';
 
 export default function ProvidersList() {
   const [providers, setProviders] = useState<ApiProvider[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingProvider, setEditingProvider] = useState<ApiProvider | null>(null);
-  const { handleApiError } = useErrorHandler();
   const { showSuccess } = useSuccessHandler();
 
   useEffect(() => {
@@ -21,11 +20,7 @@ export default function ProvidersList() {
 
   const fetchProviders = async () => {
     try {
-      const response = await fetch('/api/providers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch providers');
-      }
-      const data = await response.json();
+      const data = await providersApi.getAllProviders();
       setProviders(data);
     } catch (err) {
       console.error('Error fetching providers:', err);
@@ -41,19 +36,12 @@ export default function ProvidersList() {
     }
 
     try {
-      const response = await fetch(`/api/providers/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        await handleApiError(response, 'delete provider');
-        return;
-      }
-      
+      await providersApi.deleteProvider(id);
       setProviders(providers.filter(provider => provider.id !== id));
       showSuccess('Provider Deleted', 'Provider has been successfully deleted.');
-    } catch {
-      handleApiError(new Response(), 'delete provider');
+    } catch (error) {
+      console.error('Error deleting provider:', error);
+      setError('Failed to delete provider');
     }
   };
 

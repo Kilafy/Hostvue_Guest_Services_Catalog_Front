@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ModalActions } from '@/components/ui/modal-actions';
 import { useErrorHandler, useSuccessHandler } from '@/components/ui/toast';
+import { providersApi } from '@/services/api';
 
 interface Service {
   id: string;
@@ -80,11 +81,7 @@ export default function EditServiceModal({ service, isOpen, onClose, onUpdate }:
 
   const loadProviders = async () => {
     try {
-      const response = await fetch('/api/providers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch providers');
-      }
-      const providersData = await response.json();
+      const providersData = await providersApi.getAllProviders();
       setProviders(providersData);
     } catch (error) {
       console.error('Failed to load providers:', error);

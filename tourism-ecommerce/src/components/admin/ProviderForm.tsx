@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { providersApi } from '@/services/api';
 
 interface ProviderFormData {
   userId: string;
@@ -43,17 +44,14 @@ export default function ProviderForm() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/providers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      await providersApi.createProvider({
+        userId: formData.userId,
+        companyName: formData.companyName,
+        legalName: formData.legalName,
+        vatNumber: formData.vatNumber,
+        description: formData.description,
+        verified: formData.verified
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create provider');
-      }
 
       setMessage({ type: 'success', text: 'Provider created successfully!' });
       setFormData(initialFormData);

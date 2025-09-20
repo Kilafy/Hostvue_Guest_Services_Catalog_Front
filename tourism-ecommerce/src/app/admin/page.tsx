@@ -11,8 +11,6 @@ import ServicesList from "@/components/admin/ServicesList";
 import LocationsList from "@/components/admin/LocationsList";
 import CategoriesList from "@/components/admin/CategoriesList";
 import ProvidersList from "@/components/admin/ProvidersList";
-import MediaForm from "@/components/admin/MediaForm";
-import MediaList from "@/components/admin/MediaList";
 import DashboardStats from "@/components/admin/DashboardStats";
 import Header from "@/components/Header";
 
@@ -26,10 +24,10 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8 bg-white border border-neutral-200 p-1.5 rounded-xl shadow-sm">
+          <TabsList className="grid w-full grid-cols-5 mb-8 bg-white border border-neutral-200 p-1 rounded-xl shadow-sm overflow-hidden place-items-center">
             <TabsTrigger
               value="dashboard"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
+              className="flex items-center justify-center gap-2 rounded-md transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary py-3 px-2 mx-0.5 my-0.5"
             >
               <svg
                 className="h-4 w-4"
@@ -48,7 +46,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="services"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
+              className="flex items-center justify-center gap-2 rounded-md transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary py-3 px-2 mx-0.5 my-0.5"
             >
               <svg
                 className="h-4 w-4"
@@ -67,7 +65,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="locations"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
+              className="flex items-center justify-center gap-2 rounded-md transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary py-3 px-2 mx-0.5 my-0.5"
             >
               <svg
                 className="h-4 w-4"
@@ -92,7 +90,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="categories"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
+              className="flex items-center justify-center gap-2 rounded-md transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary py-3 px-2 mx-0.5 my-0.5"
             >
               <svg
                 className="h-4 w-4"
@@ -111,7 +109,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="providers"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
+              className="flex items-center justify-center gap-2 rounded-md transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary py-3 px-2 mx-0.5 my-0.5"
             >
               <svg
                 className="h-4 w-4"
@@ -128,25 +126,6 @@ export default function AdminDashboard() {
               </svg>
               <span className="hidden sm:inline font-medium">Providers</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="media"
-              className="flex items-center gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-hostvue-light data-[state=active]:text-hostvue-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-hostvue-accent"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="hidden sm:inline font-medium">Media</span>
-            </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Overview */}
@@ -159,21 +138,6 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
                 <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-hostvue-primary to-hostvue-secondary rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
                   <div>
                     <h2 className="text-xl font-bold text-hostvue-dark">
                       Add New Service
@@ -222,27 +186,6 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
                 <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-tourism-culture to-hostvue-accent rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
                   <div>
                     <h2 className="text-xl font-bold text-hostvue-dark">
                       Add New Location
@@ -291,21 +234,6 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
                 <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-tourism-food to-hostvue-tertiary rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                      />
-                    </svg>
-                  </div>
                   <div>
                     <h2 className="text-xl font-bold text-hostvue-dark">
                       Add New Category
@@ -354,21 +282,6 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
                 <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-tourism-adventure to-hostvue-secondary rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                  </div>
                   <div>
                     <h2 className="text-xl font-bold text-hostvue-dark">
                       Add New Provider
@@ -408,69 +321,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <ProvidersList />
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Media Management */}
-          <TabsContent value="media" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
-                <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-hostvue-primary to-hostvue-accent rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-hostvue-dark">
-                      Add New Media
-                    </h2>
-                    <p className="text-sm text-hostvue-gray mt-1">
-                      Upload images and media content
-                    </p>
-                  </div>
-                </div>
-                <MediaForm />
-              </Card>
-
-              <Card className="p-6 border-0 shadow-lg bg-white rounded-xl">
-                <div className="flex items-center mb-6">
-                  <div className="h-12 w-12 bg-gradient-to-br from-tourism-mountain to-tourism-ocean rounded-xl flex items-center justify-center mr-3 shadow-md">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-hostvue-dark">
-                      Existing Media
-                    </h2>
-                    <p className="text-sm text-hostvue-gray mt-1">
-                      Manage your media files
-                    </p>
-                  </div>
-                </div>
-                <MediaList />
               </Card>
             </div>
           </TabsContent>

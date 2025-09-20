@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import { locationsApi } from '@/services/api';
 
 interface LocationFormData {
@@ -150,64 +150,43 @@ export default function LocationForm() {
 
         {/* Image Upload Section */}
         <div>
-          <Label className="text-sm font-medium text-gray-700">Location Image (Optional)</Label>
-          <div className="mt-1 space-y-4">
-            {/* File Input */}
-            <div className="flex items-center gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2"
-              >
-                <Upload className="h-4 w-4" />
-                Choose Image
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-              {selectedImage && (
-                <span className="text-sm text-gray-600">
-                  {selectedImage.name}
-                </span>
-              )}
-            </div>
-
-            {/* Image Preview */}
-            {imagePreview && (
-              <div className="relative inline-block">
+          <Label htmlFor="image">Location Image</Label>
+          <div className="mt-2">
+            {imagePreview ? (
+              <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200">
                 <Image
                   src={imagePreview}
                   alt="Location preview"
-                  width={192}
-                  height={128}
-                  className="object-cover rounded-lg border"
+                  fill
+                  className="object-cover"
                 />
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  size="sm"
                   onClick={removeImage}
-                  className="absolute top-2 right-2 h-6 w-6 p-0 bg-white/80 hover:bg-white"
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
                 >
-                  <X className="h-3 w-3" />
-                </Button>
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
+              >
+                <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-500 text-center">
+                  Click to upload location image<br />
+                  <span className="text-xs text-gray-400">PNG, JPG up to 10MB</span>
+                </p>
               </div>
             )}
-
-            {/* No Image State */}
-            {!imagePreview && (
-              <div className="h-32 w-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-                <div className="text-center text-gray-500">
-                  <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No image selected</p>
-                </div>
-              </div>
-            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
           </div>
         </div>
 
